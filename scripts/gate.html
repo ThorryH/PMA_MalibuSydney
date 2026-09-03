@@ -1,0 +1,54 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Malibu Boats — NSW PMA</title><style>
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#0d1117;color:#e8eef5;
+ font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;
+ display:flex;align-items:center;justify-content:center}
+.card{width:340px;background:#151c24;border:1px solid #2b3540;border-radius:14px;padding:30px 28px;
+ box-shadow:0 24px 60px rgba(0,0,0,.55)}
+.mark{width:38px;height:38px;border-radius:10px;background:linear-gradient(140deg,#f59e0b,#ef4444);
+ display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:#0d1117;margin-bottom:16px}
+h1{margin:0 0 4px;font-size:15px;letter-spacing:.01em}
+p{margin:0 0 20px;font-size:12px;color:#8b9aab;line-height:1.5}
+label{display:block;font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:#8b9aab;margin-bottom:7px}
+input{width:100%;background:#0d1117;border:1px solid #2b3540;border-radius:8px;color:#e8eef5;
+ padding:11px 12px;font:inherit;font-size:14px;letter-spacing:.08em}
+input:focus{outline:none;border-color:#3b82f6}
+button{width:100%;margin-top:12px;background:#2563eb;border:0;border-radius:8px;color:#fff;
+ padding:11px;font:inherit;font-weight:600;cursor:pointer}
+button:hover{background:#1d4ed8} button:disabled{background:#25313d;color:#7b8896;cursor:default}
+.err{margin-top:11px;font-size:12px;color:#f87171;min-height:17px}
+.ft{margin-top:20px;padding-top:15px;border-top:1px solid #2b3540;font-size:10.5px;color:#5d6b7a;line-height:1.5}
+</style></head><body>
+<form class="card" id="f" autocomplete="off">
+  <div class="mark">M</div>
+  <h1>Malibu Boats — NSW PMA</h1>
+  <p>Primary Market Area concept map. Enter the access password to continue.</p>
+  <label for="p">Password</label>
+  <input id="p" type="password" autofocus autocomplete="current-password">
+  <button id="b" type="submit">Unlock map</button>
+  <div class="err" id="e"></div>
+  <div class="ft">Contents are AES‑256 encrypted in this file and decrypt only in your browser. Nothing is sent anywhere.</div>
+</form>
+<script id="d" type="application/json">__PAYLOAD__</script>
+<script>
+const D=JSON.parse(document.getElementById('d').textContent);
+const dec=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+const f=document.getElementById('f'),e=document.getElementById('e'),b=document.getElementById('b');
+f.addEventListener('submit',async ev=>{
+  ev.preventDefault(); e.textContent=''; b.disabled=true; b.textContent='Unlocking…';
+  try{
+    const pw=document.getElementById('p').value;
+    const km=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveKey']);
+    const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt:dec(D.s),iterations:D.n,hash:'SHA-256'},
+      km,{name:'AES-GCM',length:256},false,['decrypt']);
+    const buf=await crypto.subtle.decrypt({name:'AES-GCM',iv:dec(D.i)},key,dec(D.c));
+    const html=new TextDecoder().decode(buf);
+    document.open(); document.write(html); document.close();
+  }catch(err){
+    e.textContent='Incorrect password.'; b.disabled=false; b.textContent='Unlock map';
+    document.getElementById('p').select();
+  }
+});
+</script></body></html>
