@@ -20,7 +20,7 @@ Total length: **1,753 km**.
 
 A 50 km buffer is taken around the border line and intersected with the NSW
 polygon. Distance is **perpendicular to the border**, which is the standard
-reading for a territory strip — not 50 km of latitude due north.
+reading for a PMA strip — not 50 km of latitude due north.
 
 Result: **53,596 km²**.
 
@@ -237,3 +237,47 @@ its vertices are road positions, its edges are chords between them.
 
 Inside: Grafton, South Grafton, Junction Hill, Clarenza, Great Marlow,
 Waterview Heights, Ulmarra. Outside: Copmanhurst, Coutts Crossing.
+
+---
+
+# Revision — Open Area 2 routed, Grafton folded in
+
+Open Area 2's western boundary is now built the same way as Open Area 1:
+shortest-path routing along OpenStreetMap road centrelines.
+
+- 2,930 road ways queried along a 12 km corridor
+- Anchors every 4 km (not 12 km — the wider spacing let the route shortcut
+  through Grafton on the Summerland Way)
+- **41 of 44 legs routed on roads**: 168 km on roads, 13 km on the geometric line
+
+Result: **6,590 km²**, against 6,545 km² for the geometric 35 km line.
+
+## Grafton, without a ring-fence
+
+The separate 570 km² ring-fence is gone. Instead the routed boundary itself runs
+west of the city and the southern edge sits at **29.8073 S** — below the whole
+built-up area — so Grafton falls inside as a consequence of the boundary rather
+than as a bolt-on.
+
+| Locality | Road-routed | Geometric 35 km |
+|---|---|---|
+| Grafton | **In** | out |
+| South Grafton | **In** | out |
+| Junction Hill | **In** | out |
+| Clarenza | **In** | In |
+| Waterview Heights | **In** | out |
+| Ulmarra | **In** | In |
+| Copmanhurst | out | out |
+| Coutts Crossing | out | out |
+| Casino | out | out |
+| Kyogle | out | out |
+
+This also resolves the Clarence River problem from the earlier build. A closed
+loop around the city could not stay on roads because the only crossings are the
+bridges in town. An open boundary that passes west of the city has no such
+constraint — it never needs to cross the river at all.
+
+## Wording
+
+"Territory" has been removed throughout. The blue area is the **Active PMA**;
+the two carve-outs are **Open Area 1** and **Open Area 2**.

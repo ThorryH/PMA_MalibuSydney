@@ -5,26 +5,23 @@ dealership in Sydney.
 
 ![State overview](assets/state-overview.png)
 
-## The territory rule
+## The PMA rule
 
 | Zone | Definition | Area |
 |---|---|---|
-| **Open Area 1** | Everything within **15 km north of the NSW/VIC border**, measured perpendicular to the border. A road-routed variant follows OpenStreetMap centrelines where a connected network exists | 17,670 km² (road variant 17,545 km²) |
-| **NSW dealer active territory** | The balance of New South Wales + the ACT | 763,500 km² |
-| **Open Area 2** | The coastal strip from **Grafton north to the Queensland border**, held at Grafton's distance from the coast — **35.0 km** — with a straight line due east from Grafton to the sea as its southern edge, plus a 570 km² road-drawn ring-fence pulling the whole of Grafton inside | 6,495 km² |
+| **Open Area 1** | Everything within **15 km north of the NSW/VIC border**, measured perpendicular to the border | 17,545 km² road-routed (17,670 km² geometric) |
+| **Active PMA** | The balance of New South Wales + the ACT — the NSW dealer's area | 763,600 km² |
+| **Open Area 2** | The coastal strip from **Grafton north to the Queensland border**, held at Grafton's distance from the coast — **35.0 km** — with a straight line due east to the sea as its southern edge. The routed boundary runs west of Grafton so the whole city is inside | 6,590 km² road-routed (6,545 km² geometric) |
 
 The Victorian border runs 1,753 km: the River Murray from the South Australian
 corner up to its source, then the straight survey line south-east to Cape Howe.
 
-Open Area 2's western boundary is also published as a **road-snapped** variant that
-follows real roads — the Summerland Way (B91) from Grafton to near Casino, the
-Casino–Coraki Road, the Bruxner Highway (B60), Spring Grove Road, Kyogle Road,
-Rock Valley Road, Nimbin Road and Routes 32/34 up to the Queensland border.
-It comes out at 6,072 km², within 0.05% of the exact 35 km line.
+Both open areas publish a **road-routed** boundary alongside the geometric line. The routed boundaries are the operative ones and are shown by default; the geometric lines stay available for comparison.
 
-> **Grafton sits exactly on the corner** — 35.2 km from the coast, on the southern
-> boundary line. Whether the town itself falls inside Open Area 2 is a decision
-> still to be made; the map marks it as an anchor rather than assigning it.
+> **The whole of Grafton is inside Open Area 2.** The routed boundary runs west of
+> the city, so Grafton, South Grafton, Junction Hill, Clarenza, Waterview Heights
+> and Ulmarra all fall inside — on roads, with no separate ring-fence.
+> Copmanhurst, Coutts Crossing, Casino and Kyogle stay outside.
 
 ## What's in the map
 
@@ -32,7 +29,7 @@ It comes out at 6,072 km², within 0.05% of the exact 35 km line.
 dependencies. Open it in any browser.
 
 - **State overview / Detail / Satellite** view modes
-- Base mapping with roads, towns and labels drawn *above* the territory shading
+- Base mapping with roads, towns and labels drawn *above* the PMA shading
 - Opacity slider to fade the overlays back
 - Layer toggles for each zone, the border, and the 50 km line
 - 4,118 towns and localities, each tagged with its zone and its distance from the Victorian border or from the coast
@@ -64,7 +61,7 @@ The map renders **vector tiles** with MapLibre GL JS:
 | Satellite | Esri World Imagery (raster — imagery always is) |
 
 [OpenFreeMap](https://openfreemap.org) is free, keyless and unmetered. Vector
-means crisp labels and roads at every zoom, no `@2x` requests, and the territory
+means crisp labels and roads at every zoom, no `@2x` requests, and the PMA
 fills are inserted **beneath the base map's own label layers** — so town and road
 names always read on top of the shading, which the old raster build faked with a
 second tile layer.
@@ -92,7 +89,7 @@ the page contacts (expected: `tiles.openfreemap.org`, `server.arcgisonline.com`)
 ```
 index.html                  Password-protected map (this is what gets published)
 assets/state-overview.png   Static state-level overview
-data/pma.geojson            Territory polygons, border and boundary lines (WGS84)
+data/pma.geojson            PMA polygons, border and boundary lines (WGS84)
 data/towns.json             Localities with zone + distance to border
 docs/METHODOLOGY.md         How the geometry was computed, and its limits
 data/open_area_2_road_snap.json  OSM road-snap samples for Open Area 2
@@ -122,6 +119,6 @@ Individual steps: `make data`, `make geometry`, `make map`, `make lock PW=…`.
 
 ## Disclaimer
 
-Concept map for territory planning discussion. Boundaries are indicative and
+Concept map for PMA planning discussion. Boundaries are indicative and
 this is not a legal instrument. Confirm any boundary against a surveyed
 description before it goes into a dealer agreement.

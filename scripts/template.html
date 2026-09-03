@@ -53,8 +53,9 @@ input[type=range]{width:100%;accent-color:#3b82f6}
   <div class="hd">
     <h1>MALIBU BOATS — NSW PMA</h1>
     <p>Primary Market Area concept · new Sydney dealership.<br>
-      <b style="color:#f59e0b">Open Area 1</b> — 15&nbsp;km north of the Victorian border.<br>
-      <b style="color:#10b981">Open Area 2</b> — Grafton to the Queensland border, 35&nbsp;km inland.</p>
+      <b style="color:#22d3ee">Open Area 1</b> — 15&nbsp;km north of the Victorian border.<br>
+      <b style="color:#a3e635">Open Area 2</b> — Grafton to the Queensland border, 35&nbsp;km inland.<br>
+      Boundaries routed along real roads; the geometric lines are kept for comparison.</p>
   </div>
   <div class="sec"><h2>View</h2>
     <div class="seg" id="mode">
@@ -64,13 +65,12 @@ input[type=range]{width:100%;accent-color:#3b82f6}
     </div>
     <div class="note" style="margin-top:9px">Vector base map — crisp at every zoom, no API key.</div>
   </div>
-  <div class="sec"><h2>Territories</h2>
-    <label class="row"><input type="checkbox" id="l_open" checked><i class="sw" style="background:#f59e0b"></i><span>Open Area 1 — 15 km exact</span><small>17,670 km²</small></label>
-    <label class="row"><input type="checkbox" id="l_road"><i class="sw" style="background:#22d3ee"></i><span>Open Area 1 — road-snapped</span><small>17,545 km²</small></label>
-    <label class="row"><input type="checkbox" id="l_open2" checked><i class="sw" style="background:#10b981"></i><span>Open Area 2 — exact</span><small>6,495 km²</small></label>
-    <label class="row"><input type="checkbox" id="l_road2"><i class="sw" style="background:#a3e635"></i><span>Open Area 2 — road-snapped</span><small>6,498 km²</small></label>
-    <label class="row"><input type="checkbox" id="l_graf" checked><i class="sw" style="background:#facc15"></i><span>Grafton ring-fence</span><small>570 km²</small></label>
-    <label class="row"><input type="checkbox" id="l_active" checked><i class="sw" style="background:#2563eb"></i><span>NSW dealer active territory</span><small>763,500 km²</small></label>
+  <div class="sec"><h2>PMA areas</h2>
+    <label class="row"><input type="checkbox" id="l_road" checked><i class="sw" style="background:#22d3ee"></i><span>Open Area 1 — road-snapped</span><small>17,545 km²</small></label>
+    <label class="row"><input type="checkbox" id="l_open"><i class="sw" style="background:#f59e0b"></i><span>Open Area 1 — 15 km exact</span><small>17,670 km²</small></label>
+    <label class="row"><input type="checkbox" id="l_road2" checked><i class="sw" style="background:#a3e635"></i><span>Open Area 2 — road-snapped</span><small>6,590 km²</small></label>
+    <label class="row"><input type="checkbox" id="l_open2"><i class="sw" style="background:#10b981"></i><span>Open Area 2 — 35 km exact</span><small>6,545 km²</small></label>
+    <label class="row"><input type="checkbox" id="l_active" checked><i class="sw" style="background:#2563eb"></i><span>Active PMA — NSW dealer</span><small>763,600 km²</small></label>
     <h2 style="margin:13px 0 9px">Boundaries</h2>
     <label class="row"><input type="checkbox" id="l_border" checked><i class="sw ln" style="border-color:#ef4444"></i><span>NSW / VIC border</span><small>1,753 km</small></label>
     <label class="row"><input type="checkbox" id="l_line" checked><i class="sw ln" style="border-color:#fff"></i><span>Geometric lines (15 / 35 km)</span></label>
@@ -89,11 +89,12 @@ input[type=range]{width:100%;accent-color:#3b82f6}
     <div id="info">Click anywhere on the map to test a location.</div>
   </div>
   <div class="sec"><h2>How the road boundaries were built</h2>
-    <div class="note">Shortest-path routing along OpenStreetMap road centrelines between anchors set on the geometric line. Where no connected road network exists — the Sunraysia mallee, the Snowy Mountains, the far south-east forests — the boundary stays on the geometric line rather than being dragged off-corridor.</div>
+    <div class="note">Shortest-path routing along OpenStreetMap road centrelines between anchors set on the geometric line. Where no connected road network exists — the Sunraysia mallee, the Snowy Mountains, the far south-east forests — the boundary stays on the geometric line rather than being dragged off-corridor.<br><br>
+    Open Area 2's boundary runs west of Grafton so the whole city — Grafton, South Grafton, Junction Hill, Clarenza, Waterview Heights and Ulmarra — sits inside, on roads, with no separate ring.</div>
   </div>
   <div class="foot">Concept map — boundaries indicative, not a legal instrument.
     Base map © OpenFreeMap, © OpenMapTiles, © OpenStreetMap contributors. Imagery © Esri.
-    Territory geometry on GDA94 Lambert (EPSG:3112).</div>
+    PMA geometry on GDA94 Lambert (EPSG:3112).</div>
  </aside>
  <div id="map"></div>
  <button id="toggle">☰ Panel</button>
@@ -123,12 +124,11 @@ map.addControl(new maplibregl.ScaleControl({maxWidth:120,unit:'metric'}),'bottom
 
 let mode='state';
 const FILLS=[
- ['pma_active', 'active_exact', '#2563eb', .38, '#60a5fa', 1.0, 'l_active'],
- ['pma_open',   'open_exact',   '#f59e0b', .60, '#fbbf24', 1.2, 'l_open'],
- ['pma_openrd', 'open_road',    '#22d3ee', .28, '#22d3ee', 1.4, 'l_road'],
- ['pma_open2',  'open2_exact',  '#10b981', .60, '#34d399', 1.2, 'l_open2'],
- ['pma_open2rd','open2_road',   '#a3e635', .28, '#a3e635', 1.4, 'l_road2'],
- ['pma_graf',   'grafton_ring', '#facc15', .55, '#facc15', 2.0, 'l_graf']];
+ ['pma_active', 'active_road',  '#2563eb', .38, '#60a5fa', 1.0, 'l_active'],
+ ['pma_openrd', 'open_road',    '#22d3ee', .55, '#22d3ee', 1.6, 'l_road'],
+ ['pma_open',   'open_exact',   '#f59e0b', .40, '#fbbf24', 1.2, 'l_open'],
+ ['pma_open2rd','open2_road',   '#a3e635', .55, '#a3e635', 1.6, 'l_road2'],
+ ['pma_open2',  'open2_exact',  '#10b981', .40, '#34d399', 1.2, 'l_open2']];
 const LINES=[
  ['ln_border','border','#ef4444',2.6,null,'l_border'],
  ['ln_15','line_exact','#ffffff',1.7,[3,2],'l_line'],
@@ -177,7 +177,7 @@ function addAll(){
 }
 map.on('load',addAll);
 /* If the vector style cannot be reached (offline, blocked network), fall back to
-   raster imagery so the territories still render rather than showing a blank map. */
+   raster imagery so the PMA areas still render rather than showing a blank map. */
 let fellBack=false;
 function fallback(reason){
   if(fellBack||mode==='sat')return; fellBack=true;
@@ -256,20 +256,18 @@ map.on('click',e=>{
   const lat=e.lngLat.lat, lng=e.lngLat.lng;
   const oe=inPoly(lat,lng,F.open_exact.geometry), or_=F.open_road?inPoly(lat,lng,F.open_road.geometry):false,
         o2=inPoly(lat,lng,F.open2_exact.geometry), o2r=inPoly(lat,lng,F.open2_road.geometry),
-        gf=inPoly(lat,lng,F.grafton_ring.geometry),
-        ac=inPoly(lat,lng,F.active_exact.geometry);
+        ac=inPoly(lat,lng,F.active_road.geometry);
   let z,col;
-  if(oe){z='OPEN AREA 1';col='#f59e0b'} else if(o2||gf){z='OPEN AREA 2';col='#10b981'}
-  else if(ac){z='ACTIVE DEALER TERRITORY';col='#2563eb'} else {z='OUTSIDE THE NSW PMA';col='#64748b'}
+  if(or_||oe){z='OPEN AREA 1';col='#22d3ee'} else if(o2r||o2){z='OPEN AREA 2';col='#a3e635'}
+  else if(ac){z='ACTIVE PMA';col='#2563eb'} else {z='OUTSIDE THE NSW PMA';col='#64748b'}
   let near=null,nd=1e9;
   TOWNS.forEach(t=>{const dd=hav([lat,lng],[t.lat,t.lon]); if(dd<nd){nd=dd;near=t}});
   document.getElementById('info').innerHTML=
    `<span class="badge" style="background:${col};color:#0d1117">${z}</span>
     <div class="kv"><span>Distance to VIC border</span><span>${dTo(BORDER,lat,lng).toFixed(1)} km</span></div>
     <div class="kv"><span>Distance to the coast</span><span>${dTo(COAST,lat,lng).toFixed(1)} km</span></div>
-    <div class="kv"><span>Open Area 1 — exact / road</span><span>${oe?'Yes':'No'} / ${or_?'Yes':'No'}</span></div>
-    <div class="kv"><span>Open Area 2 — exact / road</span><span>${o2?'Yes':'No'} / ${o2r?'Yes':'No'}</span></div>
-    <div class="kv"><span>Grafton ring-fence</span><span>${gf?'Yes':'No'}</span></div>
+    <div class="kv"><span>Open Area 1 — road / exact</span><span>${or_?'Yes':'No'} / ${oe?'Yes':'No'}</span></div>
+    <div class="kv"><span>Open Area 2 — road / exact</span><span>${o2r?'Yes':'No'} / ${o2?'Yes':'No'}</span></div>
     <div class="kv"><span>Nearest locality</span><span>${near?near.n+' · '+nd.toFixed(0)+' km':'—'}</span></div>
     <div class="kv"><span>Coordinates</span><span>${lat.toFixed(4)}, ${lng.toFixed(4)}</span></div>`;
   if(pin)pin.remove();
@@ -282,7 +280,7 @@ map.on('mouseleave','towns_c',()=>map.getCanvas().style.cursor='');
 map.on('click','towns_c',e=>{const p=e.features[0].properties;
   new maplibregl.Popup({closeButton:false}).setLngLat(e.lngLat)
    .setHTML(`<b>${p.n}</b> ${p.s}<br>${p.d} km from the ${p.r==='coast'?'coast':'VIC border'}<br>`+
-     ({open:'Open Area 1',open2:'Open Area 2',active:'Active dealer territory',vic:'Victoria — outside PMA'}[p.z]||''))
+     ({open:'Open Area 1',open2:'Open Area 2',active:'Active PMA',vic:'Victoria — outside PMA'}[p.z]||''))
    .addTo(map);});
 
 const ZC={open:'#fbbf24',open2:'#6ee7b7',active:'#93c5fd',vic:'#94a3b8'};

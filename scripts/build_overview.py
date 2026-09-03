@@ -32,16 +32,16 @@ for nm in ['Victoria','South Australia','Queensland']:
     poly(states[nm],color='#232c36',zorder=1)
     outline(states[nm],color='#3a4756',lw=.8,zorder=1.3)
 
-poly(by['active_exact'],color='#1d4ed8',alpha=.62,zorder=2)
-poly(by['open_exact'],color='#f59e0b',alpha=.92,zorder=3)
-poly(by['open2_exact'],color='#10b981',alpha=.92,zorder=3)
-poly(by['grafton_ring'],color='#facc15',alpha=.85,zorder=3.4)
-outline(by['open2_exact'],color='#6ee7b7',lw=1.0,zorder=3.7)
+poly(by['active_road'],color='#1d4ed8',alpha=.62,zorder=2)
+poly(by['open_road'],color='#22d3ee',alpha=.92,zorder=3)
+poly(by['open2_road'],color='#a3e635',alpha=.92,zorder=3)
+outline(by['open2_road'],color='#bef264',lw=1.0,zorder=3.7)
 line(by['open2_line_south'],color='#facc15',lw=2.0,zorder=5)
 line(by['open2_line_exact'],color='#ffffff',lw=1.3,ls=(0,(5,3)),zorder=5)
-outline(by['active_exact'],color='#7dd3fc',lw=1.0,zorder=3.6)
+outline(by['active_road'],color='#7dd3fc',lw=1.0,zorder=3.6)
 line(by['border'],color='#ef4444',lw=2.2,zorder=5)
 line(by['line_exact'],color='#ffffff',lw=1.3,ls=(0,(5,3)),zorder=5)
+line(by['line_snap'],color='#22d3ee',lw=1.5,ls=(0,(2,2)),zorder=5.3)
 
 EXTRA={'Grafton':(152.9336,-29.6876),'Sydney':(151.209,-33.868),'Newcastle':(151.784,-32.927),'Wollongong':(150.894,-34.425),
        'Dubbo':(148.601,-32.243),'Orange':(149.100,-33.284),'Bathurst':(149.580,-33.420),
@@ -72,7 +72,7 @@ for n,(lo,la) in VICCTX.items():
 
 # new dealership marker
 ax.plot(152.9336,-29.6876,marker='D',ms=6.5,color='#facc15',mec='#0d1117',mew=1.0,zorder=8)
-ax.annotate('GRAFTON — Open Area 2 anchor',(152.9336,-29.6876),textcoords='offset points',
+ax.annotate('GRAFTON — inside Open Area 2',(152.9336,-29.6876),textcoords='offset points',
             xytext=(-11,-11),fontsize=7.0,color='#facc15',fontweight='bold',ha='right',va='center',zorder=8)
 ax.plot(151.209,-33.868,marker='*',ms=17,color='#facc15',mec='#0d1117',mew=1.0,zorder=8)
 ax.annotate('NEW DEALERSHIP',(151.209,-33.868),textcoords='offset points',xytext=(-14,-15),
@@ -88,13 +88,13 @@ ax.text(.012,.978,'MALIBU BOATS — NEW SOUTH WALES PMA',transform=ax.transAxes,
         fontsize=17,fontweight='bold',va='top')
 ax.text(.012,.944,'State overview · Open Area 1 = 15 km north of the Victorian border · Open Area 2 = Grafton to the Queensland border, 35 km inland',
         transform=ax.transAxes,color='#93a3b3',fontsize=8.6,va='top')
-h=[Patch(fc='#f59e0b',alpha=.92,label='Open Area 1 — 15 km north of the VIC border   17,670 km²'),
-   Patch(fc='#10b981',alpha=.92,label='Open Area 2 — Grafton to QLD, 35 km inland   6,495 km²'),
-   Patch(fc='#1d4ed8',alpha=.62,label='NSW dealer active territory — the balance   763,500 km²'),
+h=[Patch(fc='#22d3ee',alpha=.92,label='Open Area 1 — 15 km north of the VIC border, road-routed   17,545 km²'),
+   Patch(fc='#a3e635',alpha=.92,label='Open Area 2 — Grafton to QLD, 35 km inland, road-routed   6,590 km²'),
+   Patch(fc='#1d4ed8',alpha=.62,label='Active PMA — NSW dealer, the balance   763,600 km²'),
    Patch(fc='#232c36',ec='#3a4756',label='Outside the PMA — VIC / SA / QLD'),
    Line2D([],[],color='#ef4444',lw=2.2,label='NSW / VIC border (River Murray → Cape Howe)'),
-   Line2D([],[],color='#fff',lw=1.3,ls='--',label='Boundary lines (15 km / 35 km)'),
-   Patch(fc='#facc15',alpha=.85,label='Grafton ring-fence (roads)   570 km²')]
+   Line2D([],[],color='#ffffff',lw=1.3,ls='--',label='Geometric reference lines (15 km / 35 km)'),
+   Line2D([],[],color='#facc15',lw=2.2,label='Open Area 2 southern edge (Grafton to the sea)')]
 lg=ax.legend(handles=h,loc='lower left',bbox_to_anchor=(.012,.012),frameon=True,fontsize=8.2)
 lg.get_frame().set_facecolor('#151c24'); lg.get_frame().set_edgecolor('#33404e')
 for t in lg.get_texts(): t.set_color(INK)
@@ -112,10 +112,8 @@ def iline(g,**kw):
     for p in getattr(g,'geoms',[g]):
         x,y=p.xy; iax.plot(x,y,**kw)
 ipoly(states['Queensland'],color='#232c36',zorder=1)
-ipoly(by['active_exact'],color='#1d4ed8',alpha=.62,zorder=2)
-ipoly(by['open2_exact'],color='#10b981',alpha=.92,zorder=3)
-ipoly(by['grafton_ring'],color='#facc15',alpha=.85,zorder=3.4)
-poly(by['grafton_ring'],color='#facc15',alpha=.85,zorder=3.4)
+ipoly(by['active_road'],color='#1d4ed8',alpha=.62,zorder=2)
+ipoly(by['open2_road'],color='#a3e635',alpha=.92,zorder=3)
 iline(by['open2_line_exact'],color='#ffffff',lw=1.4,ls=(0,(5,3)),zorder=5)
 iline(by['open2_line_snap'],color='#a3e635',lw=1.6,ls=(0,(2,3)),zorder=5.2)
 iline(by['open2_line_south'],color='#facc15',lw=2.2,zorder=5.4)
@@ -138,7 +136,7 @@ iax.set_xlim(152.45,153.80); iax.set_ylim(-30.05,-27.86)
 iax.set_aspect(1/np.cos(np.radians(29))); iax.set_xticks([]); iax.set_yticks([])
 iax.text(.03,.975,'OPEN AREA 2 — NORTHERN RIVERS',transform=iax.transAxes,color='#6ee7b7',
          fontsize=8.4,fontweight='bold',va='top')
-iax.text(.03,.932,'Grafton → QLD border · 35 km inland · Grafton ring-fenced · 6,495 km²',transform=iax.transAxes,
+iax.text(.03,.932,'Grafton → QLD border · 35 km inland · road-routed · 6,590 km²',transform=iax.transAxes,
          color='#93a3b3',fontsize=6.8,va='top')
 iax.text(.03,.038,'— — 35 km line     · · · road-snapped     — Grafton line',transform=iax.transAxes,
          color='#93a3b3',fontsize=6.2,va='bottom')

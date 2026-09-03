@@ -6,7 +6,7 @@ fwd=pyproj.Transformer.from_crs("EPSG:4326","EPSG:3112",always_xy=True).transfor
 P=lambda g: transform(fwd,g)
 fc=json.load(open('pma.geojson'))
 by={f['properties']['id']:shape(f['geometry']) for f in fc['features']}
-borderP=P(by['border']); openE=P(by['open_exact']); openR=openE
+borderP=P(by['border']); openE=P(by['open_exact']); openR=P(by['open_road'])
 o2E=P(by['open2_exact']); o2R=P(by['open2_road'])
 import pickle
 coastP=pickle.load(open('oa2.pkl','rb'))['coastP']
