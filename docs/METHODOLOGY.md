@@ -156,3 +156,60 @@ Rivers.
 Grafton measures 35.2 km against an anchor distance of 35.0 km, so it lands
 0.2 km outside its own boundary. It is marked on the map as an anchor rather
 than being assigned to a zone.
+
+---
+
+# Base mapping
+
+CARTO raster basemaps, keyed. The key goes on the tile URL as `?key=`.
+
+An earlier build used `?api_key=`, which CARTO silently ignores — the tiles
+still returned HTTP 200 and a valid PNG, but with an `API KEY REQUIRED`
+watermark burnt into the image. Checking the status code is not enough; the
+tile has to be looked at. The verification script
+(`local/verify_key.py` pattern) asserts every `cartocdn` request carries
+`?key=`, and a tile was pulled and inspected by eye.
+
+---
+
+# Revision — 15 km Open Area 1, and the Grafton ring-fence
+
+## Open Area 1 reduced to 15 km
+
+The strip is now **15 km** perpendicular from the Victorian border: **17,670 km²**,
+down from 53,600 km² at 50 km. Towns that were inside at 50 km and are now outside
+include Deniliquin (34.9 km), Culcairn (36.4), Berrigan (27.2), Holbrook (25.9),
+Finley (18.0), Moulamein (41.9), Eden (40.9), Jindabyne (41.7) and Bombala (30.5).
+Still inside: Albury, Moama, Tocumwal, Corowa, Barham, Mulwala, Howlong, Barooga,
+Euston, Buronga, Dareton, Tooleybuc, Mathoura (8.2) and Khancoban (7.9).
+
+**The road-snapped variant of Open Area 1 is not in this build.** The Overpass
+mirrors repeatedly returned dispatcher timeouts on the long border corridors, and
+the previous Natural Earth fallback is too coarse to snap a 15 km line against —
+its median distance to a mapped road is 14.5 km, which would move the boundary
+by as much as the strip is wide. Only the exact 15 km line is published.
+
+## Grafton ring-fence
+
+Built from real OpenStreetMap data: 1,402 ways within 15 km of Grafton
+(motorway → residential). The city's extent is taken from the residential road
+network; 20 anchors are placed one sector-radius plus 3 km out from the centroid,
+snapped to the nearest road node, and consecutive anchors are joined by Dijkstra
+shortest paths **along road centrelines**, with a 12× cost penalty on edges inside
+the urban core so routes go around the city rather than through it. All 20 legs
+routed successfully.
+
+The published ring-fence is the **convex hull of that routed loop** — 570 km²,
+88 km perimeter, every vertex sitting on a real road.
+
+### Why the hull rather than the loop itself
+
+Grafton straddles the Clarence River and the only road crossings are the bridges
+in the city itself. A closed loop that stays on roads therefore cannot enclose
+both banks — it has to come back through town to cross, which splits the enclosed
+area and leaves South Grafton outside. Two routing attempts confirmed this, the
+second with the urban-core penalty in place. The hull is the honest compromise:
+its vertices are road positions, its edges are chords between them.
+
+Inside: Grafton, South Grafton, Junction Hill, Clarenza, Great Marlow,
+Waterview Heights, Ulmarra. Outside: Copmanhurst, Coutts Crossing.

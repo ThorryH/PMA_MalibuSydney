@@ -60,7 +60,7 @@ input[type=range]{width:100%;accent-color:#3b82f6}
   <div class="hd">
     <h1>MALIBU BOATS — NSW PMA</h1>
     <p>Primary Market Area concept · new Sydney dealership.<br>
-       <b style="color:#f59e0b">Open Area 1</b> — 50&nbsp;km north of the Victorian border.<br>
+       <b style="color:#f59e0b">Open Area 1</b> — 15&nbsp;km north of the Victorian border.<br>
        <b style="color:#10b981">Open Area 2</b> — the coastal strip from Grafton north to Queensland, 35&nbsp;km inland.</p>
   </div>
 
@@ -75,14 +75,14 @@ input[type=range]{width:100%;accent-color:#3b82f6}
 
   <div class="sec">
     <h2>Territories</h2>
-    <label class="row"><input type="checkbox" id="l_open" checked><i class="sw" style="background:#f59e0b"></i><span>Open Area 1 — exact</span><small>53,600 km²</small></label>
-    <label class="row"><input type="checkbox" id="l_road"><i class="sw" style="background:#22d3ee"></i><span>Open Area 1 — road-snapped</span><small>54,600 km²</small></label>
-    <label class="row"><input type="checkbox" id="l_open2" checked><i class="sw" style="background:#10b981"></i><span>Open Area 2 — exact</span><small>6,070 km²</small></label>
-    <label class="row"><input type="checkbox" id="l_road2"><i class="sw" style="background:#a3e635"></i><span>Open Area 2 — road-snapped</span><small>6,070 km²</small></label>
-    <label class="row"><input type="checkbox" id="l_active" checked><i class="sw" style="background:#2563eb"></i><span>NSW dealer active territory</span><small>728,000 km²</small></label>
+    <label class="row"><input type="checkbox" id="l_open" checked><i class="sw" style="background:#f59e0b"></i><span>Open Area 1 — 15 km</span><small>17,670 km²</small></label>
+    <label class="row"><input type="checkbox" id="l_open2" checked><i class="sw" style="background:#10b981"></i><span>Open Area 2 — exact</span><small>6,495 km²</small></label>
+    <label class="row"><input type="checkbox" id="l_road2"><i class="sw" style="background:#a3e635"></i><span>Open Area 2 — road-snapped</span><small>6,498 km²</small></label>
+    <label class="row"><input type="checkbox" id="l_graf" checked><i class="sw" style="background:#facc15"></i><span>Grafton ring-fence</span><small>570 km²</small></label>
+    <label class="row"><input type="checkbox" id="l_active" checked><i class="sw" style="background:#2563eb"></i><span>NSW dealer active territory</span><small>763,500 km²</small></label>
     <h2 style="margin:13px 0 9px">Boundaries</h2>
     <label class="row"><input type="checkbox" id="l_border" checked><i class="sw ln" style="border-color:#ef4444"></i><span>NSW / VIC border</span><small>1,753 km</small></label>
-    <label class="row"><input type="checkbox" id="l_line" checked><i class="sw ln" style="border-color:#fff"></i><span>Open Area 1 — 50 km line</span></label>
+    <label class="row"><input type="checkbox" id="l_line" checked><i class="sw ln" style="border-color:#fff"></i><span>Open Area 1 — 15 km line</span></label>
     <label class="row"><input type="checkbox" id="l_line2" checked><i class="sw ln" style="border-color:#fff"></i><span>Open Area 2 — 35 km line</span></label>
     <label class="row"><input type="checkbox" id="l_towns"><i class="sw" style="background:#94a3b8;border-radius:50%"></i><span>Towns &amp; localities</span><small id="tct"></small></label>
     <div style="margin-top:11px">
@@ -105,10 +105,10 @@ input[type=range]{width:100%;accent-color:#3b82f6}
   <div class="sec">
     <h2>Open Area 2 — the rule</h2>
     <div class="note">
-      Southern edge: a straight line due east from <b style="color:#facc15">Grafton</b> to the coast (37.4&nbsp;km).<br><br>
+      Southern edge: a straight line due east from <b style="color:#facc15">Grafton</b> to the coast (37.4&nbsp;km), with the whole of Grafton pulled inside by a <b style="color:#facc15">ring-fence</b> drawn on the road network (570&nbsp;km²).<br><br>
       Western edge: held at Grafton's distance from the coast — <b>35.0&nbsp;km</b> — all the way north to the Queensland border.<br><br>
       The road-snapped variant follows the Summerland Way, Casino–Coraki Road, Bruxner Highway, Kyogle Road, Nimbin Road and Route&nbsp;32/34.<br><br>
-      <span style="color:#facc15">Grafton sits exactly on the corner — 35.2&nbsp;km from the coast. Decide whether the town itself is in or out.</span>
+      <span style="color:#facc15">Grafton, South Grafton, Junction Hill, Clarenza, Great Marlow, Waterview Heights and Ulmarra are all inside the ring-fence.</span>
     </div>
   </div>
 
@@ -132,36 +132,50 @@ map.getPane('labels').style.pointerEvents='none';
 map.createPane('fills');  map.getPane('fills').style.zIndex=400;
 map.createPane('lines');  map.getPane('lines').style.zIndex=560;
 
-/* ── Config ──────────────────────────────────────────────────────────────
-   CARTO API key. CARTO's public raster basemaps do not currently require a
-   key, so the map works with this blank. It is appended to every CARTO tile
-   request so usage is attributed to the account once an authenticated plan
-   is in place. Restrict the key in the CARTO console before publishing.  */
-const CARTO_API_KEY = 'cb1_2tyi_1_148a4751e35ac61e4421aef0';
-const CK = CARTO_API_KEY ? '?api_key=' + encodeURIComponent(CARTO_API_KEY) : '';
+/* ── Base mapping — no API key required ──────────────────────────────────
+   Esri's ArcGIS Online basemap tiles are open and keyless. Attribution is
+   mandatory and is shown bottom-right; leave it in place.
+   CARTO's basemaps now require a free key (carto.com/basemaps/apikey) and
+   stamp "API KEY REQUIRED" across the tiles without one. To go back to
+   CARTO, put your key in CARTO_API_KEY below — leave it blank for Esri. */
+const CARTO_API_KEY = '';
+const CK = CARTO_API_KEY ? '?key=' + encodeURIComponent(CARTO_API_KEY) : '';
+const USE_CARTO = !!CARTO_API_KEY;
 
+const ESRI  = 'https://server.arcgisonline.com/ArcGIS/rest/services/';
+const EATTR = 'Tiles &copy; <a href="https://www.esri.com/">Esri</a> — Esri, HERE, Garmin, ' +
+              '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+const E=(p,o={})=>L.tileLayer(ESRI+p+'/MapServer/tile/{z}/{y}/{x}',
+        Object.assign({maxZoom:19,attribution:EATTR},o));
 const C=(u,o={})=>L.tileLayer(u+CK,Object.assign({maxZoom:20,attribution:
  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'},o));
-const BASE={
+
+const BASE = USE_CARTO ? {
  state : C('https://{s}.basemaps.cartocdn.com/rastertiles/light_nolabels/{z}/{x}/{y}{r}.png',{subdomains:'abcd'}),
  detail: C('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png',{subdomains:'abcd'}),
- sat   : L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-         {maxZoom:19,attribution:'Imagery &copy; Esri, Maxar, Earthstar Geographics'})
+ sat   : E('World_Imagery')
+} : {
+ state : E('Canvas/World_Light_Gray_Base'),
+ detail: E('World_Street_Map'),
+ sat   : E('World_Imagery')
 };
-const LABELS={
+const LABELS = USE_CARTO ? {
  state : C('https://{s}.basemaps.cartocdn.com/rastertiles/light_only_labels/{z}/{x}/{y}{r}.png',{subdomains:'abcd',pane:'labels'}),
  detail: C('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png',{subdomains:'abcd',pane:'labels'}),
  sat   : C('https://{s}.basemaps.cartocdn.com/rastertiles/dark_only_labels/{z}/{x}/{y}{r}.png',{subdomains:'abcd',pane:'labels'})
+} : {
+ state : E('Canvas/World_Light_Gray_Reference',{pane:'labels'}),
+ detail: E('Reference/World_Boundaries_and_Places',{pane:'labels'}),
+ sat   : E('Reference/World_Boundaries_and_Places',{pane:'labels'})
 };
 let mode='state', curBase=null, curLbl=null;
 
 const S={fills:{pane:'fills'},lines:{pane:'lines'}};
 const L_open  = L.geoJSON(F.open_exact ,{pane:'fills',style:{color:'#f59e0b',weight:1.4,fillColor:'#f59e0b',fillOpacity:.55,opacity:.95}});
-const L_road  = L.geoJSON(F.open_road  ,{pane:'fills',style:{color:'#22d3ee',weight:1.6,dashArray:'6 4',fillColor:'#22d3ee',fillOpacity:.20,opacity:.95}});
 const L_active= L.geoJSON(F.active_exact,{pane:'fills',style:{color:'#60a5fa',weight:1.2,fillColor:'#2563eb',fillOpacity:.38,opacity:.9}});
 const L_border= L.geoJSON(F.border     ,{pane:'lines',style:{color:'#ef4444',weight:2.6,opacity:.98}});
 const L_line  = L.geoJSON(F.line_exact ,{pane:'lines',style:{color:'#ffffff',weight:1.8,dashArray:'7 5',opacity:.95}});
-const L_snap  = L.geoJSON(F.line_snap  ,{pane:'lines',style:{color:'#22d3ee',weight:1.8,dashArray:'2 5',opacity:.95}});
+const L_graf  = L.geoJSON(F.grafton_ring,{pane:'fills',style:{color:'#facc15',weight:2.0,fillColor:'#facc15',fillOpacity:.30,opacity:1}});
 const L_open2 = L.geoJSON(F.open2_exact,{pane:'fills',style:{color:'#10b981',weight:1.5,fillColor:'#10b981',fillOpacity:.55,opacity:.95}});
 const L_road2 = L.geoJSON(F.open2_road ,{pane:'fills',style:{color:'#a3e635',weight:1.6,dashArray:'6 4',fillColor:'#a3e635',fillOpacity:.20,opacity:.95}});
 const L_line2 = L.layerGroup([
@@ -192,7 +206,7 @@ function zoomTowns(){
 map.on('zoomend',zoomTowns);
 document.getElementById('tct').textContent=TOWNS.length.toLocaleString();
 
-const LAYERS={l_open:L_open,l_road:L_road,l_open2:L_open2,l_road2:L_road2,l_active:L_active,
+const LAYERS={l_open:L_open,l_open2:L_open2,l_road2:L_road2,l_graf:L_graf,l_active:L_active,
               l_border:L_border,l_line:L_line,l_line2:L_line2,l_towns:L_towns};
 function sync(){
   for(const id in LAYERS){
@@ -200,9 +214,6 @@ function sync(){
     if(on&&!map.hasLayer(LAYERS[id]))map.addLayer(LAYERS[id]);
     if(!on&&map.hasLayer(LAYERS[id]))map.removeLayer(LAYERS[id]);
   }
-  const r=document.getElementById('l_road').checked;
-  if(r&&!map.hasLayer(L_snap))map.addLayer(L_snap);
-  if(!r&&map.hasLayer(L_snap))map.removeLayer(L_snap);
   const r2=document.getElementById('l_road2').checked;
   if(r2&&!map.hasLayer(L_snap2))map.addLayer(L_snap2);
   if(!r2&&map.hasLayer(L_snap2))map.removeLayer(L_snap2);
@@ -214,7 +225,7 @@ function opacity(v){
   document.getElementById('opv').textContent=v+'%';
   const k=v/100;
   L_open.setStyle({fillOpacity:.85*k});
-  L_road.setStyle({fillOpacity:.42*k});
+  L_graf.setStyle({fillOpacity:.55*k});
   L_open2.setStyle({fillOpacity:.85*k});
   L_road2.setStyle({fillOpacity:.42*k});
   L_active.setStyle({fillOpacity:.62*k});
@@ -272,8 +283,9 @@ function inPoly(lat,lon,g){
 let pin=null;
 map.on('click',e=>{
   const {lat,lng}=e.latlng;
-  const oe=inPoly(lat,lng,F.open_exact.geometry), or_=inPoly(lat,lng,F.open_road.geometry),
+  const oe=inPoly(lat,lng,F.open_exact.geometry),
         o2=inPoly(lat,lng,F.open2_exact.geometry), o2r=inPoly(lat,lng,F.open2_road.geometry),
+        gf=inPoly(lat,lng,F.grafton_ring.geometry),
         ac=inPoly(lat,lng,F.active_exact.geometry);
   const d=distToBorder(lat,lng), dc=distToCoast(lat,lng);
   let z,col;
@@ -287,8 +299,9 @@ map.on('click',e=>{
    `<span class="badge" style="background:${col};color:#0d1117">${z}</span>
     <div class="kv"><span>Distance to VIC border</span><span>${d.toFixed(1)} km</span></div>
     <div class="kv"><span>Distance to the coast</span><span>${dc.toFixed(1)} km</span></div>
-    <div class="kv"><span>Open Area 1 — exact / road</span><span>${oe?'Yes':'No'} / ${or_?'Yes':'No'}</span></div>
+    <div class="kv"><span>Inside Open Area 1 (15 km)</span><span>${oe?'Yes':'No'}</span></div>
     <div class="kv"><span>Open Area 2 — exact / road</span><span>${o2?'Yes':'No'} / ${o2r?'Yes':'No'}</span></div>
+    <div class="kv"><span>Inside the Grafton ring-fence</span><span>${gf?'Yes':'No'}</span></div>
     <div class="kv"><span>Nearest locality</span><span>${near?near.n+' · '+nd.toFixed(0)+' km':'—'}</span></div>
     <div class="kv"><span>Coordinates</span><span>${lat.toFixed(4)}, ${lng.toFixed(4)}</span></div>`;
   if(pin)map.removeLayer(pin);

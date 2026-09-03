@@ -9,9 +9,9 @@ dealership in Sydney.
 
 | Zone | Definition | Area |
 |---|---|---|
-| **Open Area 1** | Everything within **50 km north of the NSW/VIC border**, measured perpendicular to the border | 53,600 km² |
-| **NSW dealer active territory** | The balance of New South Wales + the ACT | 728,000 km² |
-| **Open Area 2** | The coastal strip from **Grafton north to the Queensland border**, held at Grafton's distance from the coast — **35.0 km** — with a straight line due east from Grafton to the sea as its southern edge | 6,070 km² |
+| **Open Area 1** | Everything within **15 km north of the NSW/VIC border**, measured perpendicular to the border | 17,670 km² |
+| **NSW dealer active territory** | The balance of New South Wales + the ACT | 763,500 km² |
+| **Open Area 2** | The coastal strip from **Grafton north to the Queensland border**, held at Grafton's distance from the coast — **35.0 km** — with a straight line due east from Grafton to the sea as its southern edge, plus a 570 km² road-drawn ring-fence pulling the whole of Grafton inside | 6,495 km² |
 
 The Victorian border runs 1,753 km: the River Murray from the South Australian
 corner up to its source, then the straight survey line south-east to Cape Howe.
@@ -53,24 +53,18 @@ To change it, rebuild with `make lock PW=newpassword`.
 > **Note:** anyone with the password can save the decrypted page. Treat this as
 > controlling distribution, not as a guarantee against a determined leak.
 
-## CARTO API key
+## Base mapping — no API key required
 
-The base mapping comes from CARTO. The key is set at the top of
-`scripts/template.html`:
+The map uses **Esri's ArcGIS Online basemap tiles**, which are open and need no
+key. `scripts/verify_no_api_key.py` asserts the map makes zero requests to any
+keyed provider (last run: 0 CARTO requests, 180 Esri requests).
 
-```js
-const CARTO_API_KEY = 'cb1_2tyi_1_148a4751e35ac61e4421aef0';
-```
+Attribution is mandatory and appears bottom-right — leave it in place.
 
-It is appended to every CARTO tile request as `?api_key=`. CARTO's public
-raster basemaps do not currently require a key — the map renders correctly
-with the constant left blank — so this is here to attribute usage to the
-account once an authenticated plan is in place.
-
-> The key ships inside `index.html` and is readable by anyone who opens the
-> page, which is normal for a client-side map. Restrict it in the CARTO
-> console (domain allowlist) before publishing. To change it, edit the
-> constant, then `make map && make lock`.
+CARTO's basemaps now require a free key and stamp `API KEY REQUIRED` across the
+tiles without one. To go back to CARTO, put your key in `CARTO_API_KEY` at the
+top of `scripts/template.html`; leave it blank for Esri. Note the parameter is
+`?key=`, not `?api_key=`.
 
 ## Publishing to GitHub Pages
 

@@ -58,10 +58,18 @@ south_line=P(LineString([(GRAF.x,GRAF_LAT),(153.3248,GRAF_LAT)]))
 # ---------- rebuild everything ----------
 fc=json.load(open('pma.geojson'))
 by={f['properties']['id']:shape(f['geometry']) for f in fc['features']}
-o1e,o1r = P(by['open_exact']), P(by['open_road'])
+o1e = P(by['open_exact'])
+# Grafton ring-fence — hull of a routed road loop around the city
+from shapely.geometry import Polygon as _Pg
+_h=json.load(open('grafton_hull.json'))
+graf_ring=P(_Pg([(lo,la) for la,lo in _h]).buffer(0))
 whole = unary_union([nswP,P(act)])
+oa2_exact = unary_union([oa2_exact, graf_ring])
+oa2_road  = unary_union([oa2_road , graf_ring])
+print(f"OA2 exact +Grafton  {oa2_exact.area/1e6:,.0f} km2")
+print(f"OA2 road  +Grafton  {oa2_road.area/1e6:,.0f} km2")
 act_exact = whole.difference(o1e).difference(oa2_exact)
-act_road  = whole.difference(o1r).difference(oa2_road)
+act_road  = whole.difference(o1e).difference(oa2_road)
 print(f"active exact   {act_exact.area/1e6:,.0f} km2")
 print(f"active road    {act_road.area/1e6:,.0f} km2")
 
@@ -71,7 +79,7 @@ feats=[]
 for f in fc['features']:
     i=f['properties']['id']
     if i in ('active_exact','active_road','open2_exact','open2_road','open2_line_exact',
-             'open2_line_snap','open2_line_south','coast'): continue
+             'open2_line_snap','open2_line_south','coast','grafton_ring'): continue
     feats.append(f)
 feats += [
   F(act_exact ,{"id":"active_exact","area_km2":round(act_exact.area/1e6)}),
@@ -82,6 +90,7 @@ feats += [
   F(line      ,{"id":"open2_line_snap"}),
   F(south_line,{"id":"open2_line_south"}),
   F(d['coastP'],{"id":"coast"}),
+  F(graf_ring,{"id":"grafton_ring","area_km2":round(graf_ring.area/1e6)}),
 ]
 json.dump({"type":"FeatureCollection","features":feats},open('pma.geojson','w'))
 pickle.dump({'oa2_exact':oa2_exact,'oa2_road':oa2_road},open('oa2b.pkl','wb'))
