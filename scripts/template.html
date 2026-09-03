@@ -59,7 +59,9 @@ input[type=range]{width:100%;accent-color:#3b82f6}
  <aside id="panel">
   <div class="hd">
     <h1>MALIBU BOATS — NSW PMA</h1>
-    <p>Primary Market Area concept · new Sydney dealership. Open Area 1 = the 50&nbsp;km strip north of the Victorian border.</p>
+    <p>Primary Market Area concept · new Sydney dealership.<br>
+       <b style="color:#f59e0b">Open Area 1</b> — 50&nbsp;km north of the Victorian border.<br>
+       <b style="color:#10b981">Open Area 2</b> — the coastal strip from Grafton north to Queensland, 35&nbsp;km inland.</p>
   </div>
 
   <div class="sec">
@@ -72,12 +74,16 @@ input[type=range]{width:100%;accent-color:#3b82f6}
   </div>
 
   <div class="sec">
-    <h2>Layers</h2>
-    <label class="row"><input type="checkbox" id="l_open" checked><i class="sw" style="background:#f59e0b"></i><span>Open Area 1 — 50 km exact</span><small>53,600 km²</small></label>
+    <h2>Territories</h2>
+    <label class="row"><input type="checkbox" id="l_open" checked><i class="sw" style="background:#f59e0b"></i><span>Open Area 1 — exact</span><small>53,600 km²</small></label>
     <label class="row"><input type="checkbox" id="l_road"><i class="sw" style="background:#22d3ee"></i><span>Open Area 1 — road-snapped</span><small>54,600 km²</small></label>
-    <label class="row"><input type="checkbox" id="l_active" checked><i class="sw" style="background:#2563eb"></i><span>NSW dealer active territory</span><small>734,100 km²</small></label>
+    <label class="row"><input type="checkbox" id="l_open2" checked><i class="sw" style="background:#10b981"></i><span>Open Area 2 — exact</span><small>6,070 km²</small></label>
+    <label class="row"><input type="checkbox" id="l_road2"><i class="sw" style="background:#a3e635"></i><span>Open Area 2 — road-snapped</span><small>6,070 km²</small></label>
+    <label class="row"><input type="checkbox" id="l_active" checked><i class="sw" style="background:#2563eb"></i><span>NSW dealer active territory</span><small>728,000 km²</small></label>
+    <h2 style="margin:13px 0 9px">Boundaries</h2>
     <label class="row"><input type="checkbox" id="l_border" checked><i class="sw ln" style="border-color:#ef4444"></i><span>NSW / VIC border</span><small>1,753 km</small></label>
-    <label class="row"><input type="checkbox" id="l_line" checked><i class="sw ln" style="border-color:#fff"></i><span>50 km boundary line</span></label>
+    <label class="row"><input type="checkbox" id="l_line" checked><i class="sw ln" style="border-color:#fff"></i><span>Open Area 1 — 50 km line</span></label>
+    <label class="row"><input type="checkbox" id="l_line2" checked><i class="sw ln" style="border-color:#fff"></i><span>Open Area 2 — 35 km line</span></label>
     <label class="row"><input type="checkbox" id="l_towns"><i class="sw" style="background:#94a3b8;border-radius:50%"></i><span>Towns &amp; localities</span><small id="tct"></small></label>
     <div style="margin-top:11px">
       <h2 style="margin-bottom:6px">Overlay opacity <span id="opv" style="float:right;color:#e8eef5">—</span></h2>
@@ -97,8 +103,13 @@ input[type=range]{width:100%;accent-color:#3b82f6}
   </div>
 
   <div class="sec">
-    <h2>Open Area 2</h2>
-    <div class="note">Not yet defined. Send me the rule and I'll add it as a second layer on this map.</div>
+    <h2>Open Area 2 — the rule</h2>
+    <div class="note">
+      Southern edge: a straight line due east from <b style="color:#facc15">Grafton</b> to the coast (37.4&nbsp;km).<br><br>
+      Western edge: held at Grafton's distance from the coast — <b>35.0&nbsp;km</b> — all the way north to the Queensland border.<br><br>
+      The road-snapped variant follows the Summerland Way, Casino–Coraki Road, Bruxner Highway, Kyogle Road, Nimbin Road and Route&nbsp;32/34.<br><br>
+      <span style="color:#facc15">Grafton sits exactly on the corner — 35.2&nbsp;km from the coast. Decide whether the town itself is in or out.</span>
+    </div>
   </div>
 
   <div class="foot">
@@ -121,7 +132,15 @@ map.getPane('labels').style.pointerEvents='none';
 map.createPane('fills');  map.getPane('fills').style.zIndex=400;
 map.createPane('lines');  map.getPane('lines').style.zIndex=560;
 
-const C=(u,o={})=>L.tileLayer(u,Object.assign({maxZoom:20,attribution:
+/* ── Config ──────────────────────────────────────────────────────────────
+   CARTO API key. CARTO's public raster basemaps do not currently require a
+   key, so the map works with this blank. It is appended to every CARTO tile
+   request so usage is attributed to the account once an authenticated plan
+   is in place. Restrict the key in the CARTO console before publishing.  */
+const CARTO_API_KEY = 'cb1_2tyi_1_148a4751e35ac61e4421aef0';
+const CK = CARTO_API_KEY ? '?api_key=' + encodeURIComponent(CARTO_API_KEY) : '';
+
+const C=(u,o={})=>L.tileLayer(u+CK,Object.assign({maxZoom:20,attribution:
  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'},o));
 const BASE={
  state : C('https://{s}.basemaps.cartocdn.com/rastertiles/light_nolabels/{z}/{x}/{y}{r}.png',{subdomains:'abcd'}),
@@ -143,13 +162,23 @@ const L_active= L.geoJSON(F.active_exact,{pane:'fills',style:{color:'#60a5fa',we
 const L_border= L.geoJSON(F.border     ,{pane:'lines',style:{color:'#ef4444',weight:2.6,opacity:.98}});
 const L_line  = L.geoJSON(F.line_exact ,{pane:'lines',style:{color:'#ffffff',weight:1.8,dashArray:'7 5',opacity:.95}});
 const L_snap  = L.geoJSON(F.line_snap  ,{pane:'lines',style:{color:'#22d3ee',weight:1.8,dashArray:'2 5',opacity:.95}});
+const L_open2 = L.geoJSON(F.open2_exact,{pane:'fills',style:{color:'#10b981',weight:1.5,fillColor:'#10b981',fillOpacity:.55,opacity:.95}});
+const L_road2 = L.geoJSON(F.open2_road ,{pane:'fills',style:{color:'#a3e635',weight:1.6,dashArray:'6 4',fillColor:'#a3e635',fillOpacity:.20,opacity:.95}});
+const L_line2 = L.layerGroup([
+  L.geoJSON(F.open2_line_exact,{pane:'lines',style:{color:'#ffffff',weight:1.8,dashArray:'7 5',opacity:.95}}),
+  L.geoJSON(F.open2_line_south,{pane:'lines',style:{color:'#facc15',weight:2.2,opacity:.95}})]);
+const L_snap2 = L.geoJSON(F.open2_line_snap,{pane:'lines',style:{color:'#a3e635',weight:1.8,dashArray:'2 5',opacity:.95}});
+const ANCHOR = L.circleMarker([-29.6876,152.9336],{pane:'lines',radius:7,color:'#facc15',weight:2.5,
+  fillColor:'#0d1117',fillOpacity:1}).bindTooltip('<b>GRAFTON — Open Area 2 anchor</b><br>35.2 km from the coast<br>Southern boundary runs due east from here',
+  {className:'lbl',direction:'top',offset:[0,-6]});
 const L_towns = L.layerGroup(), KEYG=L.layerGroup(), MINORG=L.layerGroup();
 
-const ZC={open:'#fbbf24',active:'#93c5fd',vic:'#94a3b8'};
+const ZC={open:'#fbbf24',open2:'#6ee7b7',active:'#93c5fd',vic:'#94a3b8'};
+const ZN={open:'Open Area 1',open2:'Open Area 2',active:'Active dealer territory',vic:'Victoria — outside PMA'};
 TOWNS.forEach(t=>{
   const m=L.circleMarker([t.lat,t.lon],{pane:'lines',radius:t.k?4:2.6,color:'#0d1117',weight:1,
     fillColor:ZC[t.z],fillOpacity:.95});
-  m.bindTooltip(`<b>${t.n}</b> ${t.s}<br>${t.d} km from the border<br>${t.z==='open'?'Open Area 1':t.z==='active'?'Active dealer territory':'Victoria — outside PMA'}`,
+  m.bindTooltip(`<b>${t.n}</b> ${t.s}<br>${t.d} km from the ${t.r==='coast'?'coast':'VIC border'}<br>${ZN[t.z]}`,
     {className:'lbl',direction:'top',offset:[0,-4]});
   t._m=m; (t.k?KEYG:MINORG).addLayer(m);
 });
@@ -163,7 +192,8 @@ function zoomTowns(){
 map.on('zoomend',zoomTowns);
 document.getElementById('tct').textContent=TOWNS.length.toLocaleString();
 
-const LAYERS={l_open:L_open,l_road:L_road,l_active:L_active,l_border:L_border,l_line:L_line,l_towns:L_towns};
+const LAYERS={l_open:L_open,l_road:L_road,l_open2:L_open2,l_road2:L_road2,l_active:L_active,
+              l_border:L_border,l_line:L_line,l_line2:L_line2,l_towns:L_towns};
 function sync(){
   for(const id in LAYERS){
     const on=document.getElementById(id).checked;
@@ -173,6 +203,10 @@ function sync(){
   const r=document.getElementById('l_road').checked;
   if(r&&!map.hasLayer(L_snap))map.addLayer(L_snap);
   if(!r&&map.hasLayer(L_snap))map.removeLayer(L_snap);
+  const r2=document.getElementById('l_road2').checked;
+  if(r2&&!map.hasLayer(L_snap2))map.addLayer(L_snap2);
+  if(!r2&&map.hasLayer(L_snap2))map.removeLayer(L_snap2);
+  if(!map.hasLayer(ANCHOR))map.addLayer(ANCHOR);
 }
 Object.keys(LAYERS).forEach(id=>document.getElementById(id).addEventListener('change',()=>{sync();zoomTowns();}));
 
@@ -181,6 +215,8 @@ function opacity(v){
   const k=v/100;
   L_open.setStyle({fillOpacity:.85*k});
   L_road.setStyle({fillOpacity:.42*k});
+  L_open2.setStyle({fillOpacity:.85*k});
+  L_road2.setStyle({fillOpacity:.42*k});
   L_active.setStyle({fillOpacity:.62*k});
 }
 document.getElementById('op').addEventListener('input',e=>opacity(+e.target.value));
@@ -212,10 +248,15 @@ function segDist(p,a,b){ // approx planar in local km
 }
 function lineCoords(g){return g.type==='LineString'?[g.coordinates]:g.coordinates;}
 const BORDER=lineCoords(F.border.geometry);
+const COAST=lineCoords(F.coast.geometry);
 function distToBorder(lat,lon){let m=1e9;
   for(const ls of BORDER)for(let i=1;i<ls.length;i++){
     const d=segDist([lat,lon],[ls[i-1][1],ls[i-1][0]],[ls[i][1],ls[i][0]]); if(d<m)m=d;}
   return m;}
+function distToCoast(lat,lon){let m=1e9;
+  for(const ls of COAST)for(let i=1;i<ls.length;i++){
+    const d=segDist([lat,lon],[ls[i-1][1],ls[i-1][0]],[ls[i][1],ls[i][0]]); if(d<m)m=d;}
+  return m+0;}
 function inRing(lat,lon,r){let c=false;
   for(let i=0,j=r.length-1;i<r.length;j=i++){
     const xi=r[i][0],yi=r[i][1],xj=r[j][0],yj=r[j][1];
@@ -232,18 +273,22 @@ let pin=null;
 map.on('click',e=>{
   const {lat,lng}=e.latlng;
   const oe=inPoly(lat,lng,F.open_exact.geometry), or_=inPoly(lat,lng,F.open_road.geometry),
+        o2=inPoly(lat,lng,F.open2_exact.geometry), o2r=inPoly(lat,lng,F.open2_road.geometry),
         ac=inPoly(lat,lng,F.active_exact.geometry);
-  const d=distToBorder(lat,lng);
+  const d=distToBorder(lat,lng), dc=distToCoast(lat,lng);
   let z,col;
-  if(oe){z='OPEN AREA 1';col='#f59e0b'} else if(ac){z='ACTIVE DEALER TERRITORY';col='#2563eb'}
+  if(oe){z='OPEN AREA 1';col='#f59e0b'}
+  else if(o2){z='OPEN AREA 2';col='#10b981'}
+  else if(ac){z='ACTIVE DEALER TERRITORY';col='#2563eb'}
   else {z='OUTSIDE THE NSW PMA';col='#64748b'}
   let near=null,nd=1e9;
   TOWNS.forEach(t=>{const dd=hav([lat,lng],[t.lat,t.lon]); if(dd<nd){nd=dd;near=t}});
   document.getElementById('info').innerHTML=
    `<span class="badge" style="background:${col};color:#0d1117">${z}</span>
     <div class="kv"><span>Distance to VIC border</span><span>${d.toFixed(1)} km</span></div>
-    <div class="kv"><span>Inside 50 km strip (exact)</span><span>${oe?'Yes':'No'}</span></div>
-    <div class="kv"><span>Inside road-snapped strip</span><span>${or_?'Yes':'No'}</span></div>
+    <div class="kv"><span>Distance to the coast</span><span>${dc.toFixed(1)} km</span></div>
+    <div class="kv"><span>Open Area 1 — exact / road</span><span>${oe?'Yes':'No'} / ${or_?'Yes':'No'}</span></div>
+    <div class="kv"><span>Open Area 2 — exact / road</span><span>${o2?'Yes':'No'} / ${o2r?'Yes':'No'}</span></div>
     <div class="kv"><span>Nearest locality</span><span>${near?near.n+' · '+nd.toFixed(0)+' km':'—'}</span></div>
     <div class="kv"><span>Coordinates</span><span>${lat.toFixed(4)}, ${lng.toFixed(4)}</span></div>`;
   if(pin)map.removeLayer(pin);
@@ -257,7 +302,7 @@ q.addEventListener('input',()=>{
   TOWNS.filter(t=>t.n.toLowerCase().startsWith(s)).sort((a,b)=>b.k-a.k||a.n.localeCompare(b.n))
    .slice(0,25).forEach(t=>{
     const d=document.createElement('div');
-    d.innerHTML=`<i class="dot" style="background:${ZC[t.z]}"></i><b>${t.n}</b> <em>${t.s} · ${t.d} km · ${t.z==='open'?'Open':t.z==='active'?'Active':'VIC'}</em>`;
+    d.innerHTML=`<i class="dot" style="background:${ZC[t.z]}"></i><b>${t.n}</b> <em>${t.s} · ${t.d} km · ${t.z==='open'?'Open 1':t.z==='open2'?'Open 2':t.z==='active'?'Active':'VIC'}</em>`;
     d.onclick=()=>{map.setView([t.lat,t.lon],11); if(mode==='state')setMode('detail'),map.setView([t.lat,t.lon],11);
       document.getElementById('l_towns').checked=true; sync(); zoomTowns(); t._m.openTooltip();};
     res.appendChild(d);});

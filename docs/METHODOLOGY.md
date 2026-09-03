@@ -86,3 +86,73 @@ The map's point-check recomputes distance to the border in the browser using a
 local planar approximation of the great-circle distance. It agrees with the
 projected Python calculation to within ~0.5 km at the scales involved
 (Deniliquin: 34.5 km in-browser vs 34.9 km projected).
+
+---
+
+# Open Area 2 — the Northern Rivers strip
+
+## The rule
+
+1. **Southern edge** — a straight line due east from Grafton (152.9336 E,
+   29.6876 S) to the coast. That line is **37.4 km** long and meets the sea near
+   Minnie Water.
+2. **Anchor distance** — Grafton's perpendicular distance to the nearest
+   coastline is **35.0 km**. That distance sets the width of the strip.
+3. **Western edge** — held at 35.0 km from the coast, following the coastline
+   north all the way to the Queensland border.
+
+Result: **6,069 km²**.
+
+## Road-snapped variant
+
+Unlike Open Area 1, this one is built on **real OpenStreetMap data**. A corridor
+polygon 18 km either side of the 35 km line was queried through the Overpass API
+for `motorway|trunk|primary|secondary` ways, returning 1,454 road segments.
+
+The 35 km line is sampled every 4 km (42 samples). Each sample snaps to the
+nearest point on any of those roads; samples more than 8 km from a road keep
+their exact position rather than being dragged off-corridor. **39 of 42 samples
+landed on a road**, mean snap distance 2.4 km.
+
+Result: **6,072 km²** — 0.05% different from the exact strip.
+
+### The route, south to north
+
+| Road | Section |
+|---|---|
+| Gwydir Highway (B76) | at Grafton |
+| **Summerland Way (B91)** | Grafton north to near Casino — the long run, 18 of 42 samples |
+| Casino–Coraki Road | around Casino |
+| Bruxner Highway (B60) | brief east–west section |
+| Spring Grove Road | |
+| **Kyogle Road** | |
+| Rock Valley Road, Nimbin Road | |
+| **Route 32** | Nimbin north toward Uki |
+| Route 34, Route 97 | to the Queensland border near Murwillumbah |
+
+## Spot checks
+
+| Town | Distance from coast | Zone |
+|---|---|---|
+| Ballina | 0.9 km | Open Area 2 |
+| Evans Head | 1.2 km | Open Area 2 |
+| Byron Bay | 1.4 km | Open Area 2 |
+| Yamba | 2.3 km | Open Area 2 |
+| Tweed Heads | 4.5 km | Open Area 2 |
+| Alstonville | 8.2 km | Open Area 2 |
+| Maclean | 13.9 km | Open Area 2 |
+| Coraki | 17.5 km | Open Area 2 |
+| Murwillumbah | 18.3 km | Open Area 2 |
+| Lismore | 24.0 km | Open Area 2 |
+| Nimbin | 32.7 km | Open Area 2 |
+| **Grafton** | **35.2 km** | **on the boundary** |
+| Casino | 43.2 km | Active |
+| Kyogle | 54.2 km | Active |
+
+Casino and Kyogle fall outside by 8 km and 19 km respectively — worth confirming
+that is the intent, since both are commercially significant for the Northern
+Rivers.
+
+Grafton measures 35.2 km against an anchor distance of 35.0 km, so it lands
+0.2 km outside its own boundary. It is marked on the map as an anchor rather
+than being assigned to a zone.
