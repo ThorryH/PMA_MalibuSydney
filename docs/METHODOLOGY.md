@@ -281,3 +281,80 @@ constraint — it never needs to cross the river at all.
 
 "Territory" has been removed throughout. The blue area is the **Active PMA**;
 the two carve-outs are **Open Area 1** and **Open Area 2**.
+
+---
+
+# Revision — Open Area 2's southern edge routed on roads
+
+Until this revision the southern edge of Open Area 2 was the one part of either
+open area still drawn as a pure straight line: due east at **29.8073 S**, from
+the southern terminus of the routed western boundary (152.8899 E) to the sea
+near Minnie Water — 38.3 km of latitude with no reference to anything on the
+ground. It is now routed the same way as every other boundary in the project.
+
+## Method
+
+Identical parameters to the rest of the build, deliberately:
+
+- OpenStreetMap ways of class `motorway` … `residential` were queried through
+  Overpass for a corridor 152.76–153.48 E, 30.02–29.60 S — **2,105 ways,
+  21,451 graph nodes, 21,927 edges**.
+- The straight line is sampled every **4 km** (11 samples).
+- Each sample snaps to the nearest road node within **12 km**. All eleven
+  snapped, the worst at 1.6 km, the median at 0.7 km.
+- Consecutive anchors are joined by **Dijkstra shortest paths** along road
+  centrelines, accepted only where the routed distance is under
+  **2.6 × direct + 8 km**.
+- **8 of the 10 legs routed on roads.** The two that did not — 152.97–153.01 E
+  and 153.05–153.09 E — keep the geometric line, as elsewhere in the project.
+- Immediate out-and-back retraces (an anchor landing on a dead-end spur) are
+  collapsed, and the assembled line was checked for self-intersection before it
+  was used to cut the polygon.
+
+## The route, west to east
+
+McCarthys Road → Armidale Road → Braunstone Road → Orara Way → Poley House Road
+→ Dinjerra Road → Big River Way → Pacific Highway → Franklins Road → Lookout
+Road → Stonehouse Road → Lloyds Road → Wooli Road → Coast Range Road → Wooli
+Road → Diggers Camp Road, reaching the sea at **Diggers Camp**
+(153.2882 E, 29.8137 S).
+
+**65.1 km** of boundary in place of a 38.3 km line: **57.5 km on roads**,
+7.7 km still on the geometric line. The road grain in this corridor runs
+north–south — the Pacific Highway, the Big River Way, the Orara Way — so an
+east–west boundary has to work across it. The route stays within **5.3 km north
+and 5.1 km south** of 29.8073 S throughout.
+
+One consequence worth naming: between 153.03 and 153.06 E the boundary follows a
+southward loop of the Pacific Highway and Lookout Road, leaving a narrow tongue
+of Open Area 2 reaching about 5 km below the nominal line near Glenugie. It
+encloses no locality. It is a real road corridor, not an artefact of the
+algorithm, but it is the least tidy part of the boundary.
+
+## Effect
+
+| | Before | After |
+|---|---|---|
+| Open Area 2 — road-routed | 6,590 km² | **6,526 km²** |
+| Open Area 2 — geometric | 6,545 km² | 6,545 km² (unchanged) |
+| Active PMA — road-routed | 763,578 km² | **763,642 km²** |
+
+Two localities change side, both from Open Area 2 to the Active PMA:
+**Mcphersons Crossing** and **Pillar Valley**. Everything else holds, including
+the whole of Grafton, Braunstone, Bom Bom, Lake Hiawatha, Minnie Water and
+Diggers Camp. Coutts Crossing, Glenugie and Wooli remain outside, as before.
+
+The geometric version of the southern edge is retained as
+`open2_line_south_exact` and still draws on the map under **Geometric lines**;
+the routed edge is `open2_line_south` and draws with the road boundaries.
+
+## Reproducing it
+
+`scripts/build_oa2_south_route.py` reads `data/oa2_south_route.txt` (the routed
+polyline) together with `data/oa2_route.txt` (the western boundary), joins them
+into a single cut, splits New South Wales with it and rewrites `open2_road`,
+`active_road` and the `zr` field on every locality. The routing itself is done
+against live Overpass data; the sandbox has no route to the Overpass mirrors, so
+the query and the Dijkstra pass are run in a browser page on the Overpass origin
+and only the resulting polyline is brought back — the same workaround used for
+the western boundary.

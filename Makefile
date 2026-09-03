@@ -12,6 +12,7 @@ geometry:
 	cd work && python3 ../scripts/build_overview.py
 	cp work/pma.geojson work/towns.json data/
 	cp work/pma_state_overview.png assets/state-overview.png
+	python3 scripts/build_oa2_south_route.py
 
 map:
 	python3 scripts/build_map.py

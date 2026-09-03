@@ -5,18 +5,28 @@ dealership in Sydney.
 
 ![State overview](assets/state-overview.png)
 
+> **New here?** Read [`HANDOVER.md`](HANDOVER.md) — full project state, decisions,
+> open questions and limitations. [`NEW-SESSION-BRIEF.md`](NEW-SESSION-BRIEF.md)
+> is a paste-ready brief for starting a fresh AI session on this project.
+
 ## The PMA rule
 
 | Zone | Definition | Area |
 |---|---|---|
 | **Open Area 1** | Everything within **15 km north of the NSW/VIC border**, measured perpendicular to the border | 17,545 km² road-routed (17,670 km² geometric) |
-| **Active PMA** | The balance of New South Wales + the ACT — the NSW dealer's area | 763,600 km² |
-| **Open Area 2** | The coastal strip from **Grafton north to the Queensland border**, held at Grafton's distance from the coast — **35.0 km** — with a straight line due east to the sea as its southern edge. The routed boundary runs west of Grafton so the whole city is inside | 6,590 km² road-routed (6,545 km² geometric) |
+| **Active PMA** | The balance of New South Wales + the ACT — the NSW dealer's area | 763,642 km² road-routed (763,497 km² geometric) |
+| **Open Area 2** | The coastal strip from **Grafton north to the Queensland border**, held at Grafton's distance from the coast — **35.0 km**. The routed boundary runs west of Grafton so the whole city is inside, and its southern edge follows roads east to the sea at Diggers Camp | 6,526 km² road-routed (6,545 km² geometric) |
 
 The Victorian border runs 1,753 km: the River Murray from the South Australian
 corner up to its source, then the straight survey line south-east to Cape Howe.
 
 Both open areas publish a **road-routed** boundary alongside the geometric line. The routed boundaries are the operative ones and are shown by default; the geometric lines stay available for comparison.
+
+Every edge of both open areas is now routed. Open Area 2's southern edge — once a
+straight line due east at 29.8073 S — follows Armidale Road, Braunstone Road, the
+Orara Way, the Big River Way and the Pacific Highway, then Lookout, Stonehouse and
+Wooli Roads to the sea at Diggers Camp: **65.1 km of boundary, 57.5 km of it on
+roads**, in place of a 38.3 km line.
 
 > **The whole of Grafton is inside Open Area 2.** The routed boundary runs west of
 > the city, so Grafton, South Grafton, Junction Hill, Clarenza, Waterview Heights
@@ -91,8 +101,11 @@ index.html                  Password-protected map (this is what gets published)
 assets/state-overview.png   Static state-level overview
 data/pma.geojson            PMA polygons, border and boundary lines (WGS84)
 data/towns.json             Localities with zone + distance to border
+HANDOVER.md                 Project state, decisions, open questions, limitations
+NEW-SESSION-BRIEF.md        Paste-ready context for a fresh session
 docs/METHODOLOGY.md         How the geometry was computed, and its limits
-data/open_area_2_road_snap.json  OSM road-snap samples for Open Area 2
+data/oa2_route.txt          Open Area 2 — routed western boundary
+data/oa2_south_route.txt    Open Area 2 — routed southern edge (Grafton area → coast)
 scripts/                    Reproducible build
 local/                      Unprotected map — git-ignored
 ```
@@ -112,10 +125,11 @@ Individual steps: `make data`, `make geometry`, `make map`, `make lock PW=…`.
 |---|---|---|
 | State boundaries | [rowanhogan/australian-states](https://github.com/rowanhogan/australian-states) | Open |
 | Road network — Open Area 1 | [Natural Earth 10m roads](https://www.naturalearthdata.com/) | Public domain |
-| Road network — Open Area 2 | OpenStreetMap via Overpass API | ODbL |
+| Road network — Open Area 2 (western edge) | OpenStreetMap via Overpass API | ODbL |
+| Road network — Open Area 2 (southern edge) | OpenStreetMap via Overpass API | ODbL |
 | Localities | [matthewproctor/australianpostcodes](https://github.com/matthewproctor/australianpostcodes) | Open |
 | Base mapping | © OpenStreetMap contributors, © CARTO; imagery © Esri | ODbL / see providers |
-| Map library | [Leaflet](https://leafletjs.com/) 1.9.4 | BSD-2-Clause |
+| Map library | [MapLibre GL JS](https://maplibre.org/) 4.7.1 | BSD-3-Clause |
 
 ## Disclaimer
 

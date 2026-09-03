@@ -15,7 +15,8 @@ echo "→ Australian localities + coordinates"
 curl -sSL -o auspost.csv \
   https://raw.githubusercontent.com/matthewproctor/australianpostcodes/master/australian_postcodes.csv
 
-echo "→ Leaflet 1.9.4 (inlined into the map)"
-npm pack leaflet@1.9.4 --silent >/dev/null && tar xzf leaflet-1.9.4.tgz
+echo "→ MapLibre GL JS 4.7.1 (inlined into the map)"
+curl -sSL -o maplibre-gl.js  https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js
+curl -sSL -o maplibre-gl.css https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css
 
 echo "Done."
