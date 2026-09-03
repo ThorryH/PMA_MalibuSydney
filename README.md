@@ -9,7 +9,7 @@ dealership in Sydney.
 
 | Zone | Definition | Area |
 |---|---|---|
-| **Open Area 1** | Everything within **15 km north of the NSW/VIC border**, measured perpendicular to the border | 17,670 km² |
+| **Open Area 1** | Everything within **15 km north of the NSW/VIC border**, measured perpendicular to the border. A road-routed variant follows OpenStreetMap centrelines where a connected network exists | 17,670 km² (road variant 17,545 km²) |
 | **NSW dealer active territory** | The balance of New South Wales + the ACT | 763,500 km² |
 | **Open Area 2** | The coastal strip from **Grafton north to the Queensland border**, held at Grafton's distance from the coast — **35.0 km** — with a straight line due east from Grafton to the sea as its southern edge, plus a 570 km² road-drawn ring-fence pulling the whole of Grafton inside | 6,495 km² |
 
@@ -53,18 +53,28 @@ To change it, rebuild with `make lock PW=newpassword`.
 > **Note:** anyone with the password can save the decrypted page. Treat this as
 > controlling distribution, not as a guarantee against a determined leak.
 
-## Base mapping — no API key required
+## Base mapping — vector, no API key
 
-The map uses **Esri's ArcGIS Online basemap tiles**, which are open and need no
-key. `scripts/verify_no_api_key.py` asserts the map makes zero requests to any
-keyed provider (last run: 0 CARTO requests, 180 Esri requests).
+The map renders **vector tiles** with MapLibre GL JS:
+
+| Mode | Style |
+|---|---|
+| State overview | OpenFreeMap **Positron** |
+| Detail | OpenFreeMap **Liberty** |
+| Satellite | Esri World Imagery (raster — imagery always is) |
+
+[OpenFreeMap](https://openfreemap.org) is free, keyless and unmetered. Vector
+means crisp labels and roads at every zoom, no `@2x` requests, and the territory
+fills are inserted **beneath the base map's own label layers** — so town and road
+names always read on top of the shading, which the old raster build faked with a
+second tile layer.
+
+If the vector style can't be reached, the map falls back to Esri imagery and says
+so on screen rather than showing a blank canvas.
 
 Attribution is mandatory and appears bottom-right — leave it in place.
-
-CARTO's basemaps now require a free key and stamp `API KEY REQUIRED` across the
-tiles without one. To go back to CARTO, put your key in `CARTO_API_KEY` at the
-top of `scripts/template.html`; leave it blank for Esri. Note the parameter is
-`?key=`, not `?api_key=`.
+`scripts/verify_map.py` asserts every custom layer loads and reports which hosts
+the page contacts (expected: `tiles.openfreemap.org`, `server.arcgisonline.com`).
 
 ## Publishing to GitHub Pages
 

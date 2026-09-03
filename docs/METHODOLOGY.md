@@ -183,11 +183,35 @@ Finley (18.0), Moulamein (41.9), Eden (40.9), Jindabyne (41.7) and Bombala (30.5
 Still inside: Albury, Moama, Tocumwal, Corowa, Barham, Mulwala, Howlong, Barooga,
 Euston, Buronga, Dareton, Tooleybuc, Mathoura (8.2) and Khancoban (7.9).
 
-**The road-snapped variant of Open Area 1 is not in this build.** The Overpass
-mirrors repeatedly returned dispatcher timeouts on the long border corridors, and
-the previous Natural Earth fallback is too coarse to snap a 15 km line against —
-its median distance to a mapped road is 14.5 km, which would move the boundary
-by as much as the strip is wide. Only the exact 15 km line is published.
+### Road-routed variant
+
+Built from OpenStreetMap. The 15 km line is split into five corridors, each
+queried through Overpass for `motorway|trunk|primary|secondary|tertiary|unclassified`
+ways within 11 km. Anchors are placed every ~24 km along the line, snapped to the
+nearest road node, and consecutive anchors joined by **Dijkstra shortest paths along
+road centrelines** — not chords between snapped points. A leg is only accepted if
+both anchors are within 12 km of the network and the routed distance is under
+2.6x the direct distance plus 8 km; otherwise that section keeps the geometric line.
+
+Result: **17,545 km²**, within 0.7% of the exact 17,670 km².
+
+| Corridor | On roads | On the geometric line |
+|---|---|---|
+| SA corner → Swan Hill | 159 km | 179 km |
+| Swan Hill → Deniliquin | 149 km | 23 km |
+| Deniliquin → Wagga | 175 km | 0 km |
+| Wagga → Jindabyne | 90 km | 78 km |
+| Jindabyne → Cape Howe | 0 km | ~170 km |
+
+The line sections are not a shortcut — they are where no connected public road
+network exists within 12 km of a line 15 km off the border: the Sunraysia mallee,
+the Kosciuszko high country, and the Coolangubra/Nalbaugh forests behind Cape
+Howe. Dragging the boundary onto the nearest mapped road in those places would
+move it by more than the strip is wide.
+
+The final corridor (Jindabyne → Cape Howe) also could not be fetched — the
+Overpass mirrors returned dispatcher timeouts on every attempt — so it is on the
+geometric line for both reasons.
 
 ## Grafton ring-fence
 
