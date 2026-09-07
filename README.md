@@ -13,9 +13,9 @@ dealership in Sydney.
 
 | Zone | Definition | Area |
 |---|---|---|
-| **Open Area 1** | Everything within **15 km north of the NSW/VIC border**, measured perpendicular to the border | 17,545 km² road-routed (17,670 km² geometric) |
-| **Active PMA** | The balance of New South Wales + the ACT — the NSW dealer's area, held 500 m clear of the Queensland border | 763,006 km² road-routed (762,937 km² geometric) |
-| **Open Area 2** | The coastal strip from **Grafton north to the Queensland border**, held at Grafton's distance from the coast — **35.0 km** — **plus Casino**, enclosed behind a 5 km road-routed boundary. The routed line runs west of Grafton so the whole city is inside, and its southern edge follows roads east to the sea at Diggers Camp | 6,754 km² road-routed (6,696 km² geometric) |
+| **Open Area 1** | Everything within **15 km north of the NSW/VIC border**, measured perpendicular to the border, **plus Deniliquin** behind a 5 km road-routed boundary | 17,993 km² road-routed (18,060 km² geometric) |
+| **Active PMA** | The balance of New South Wales + the ACT — the NSW dealer's area, held 500 m clear of the Queensland border | 762,558 km² road-routed (762,539 km² geometric) |
+| **Open Area 2** | The coastal strip from **Grafton north to the Queensland border**, held at Grafton's distance from the coast — **35.0 km** — **plus Casino**, enclosed behind a 5 km road-routed boundary. The routed line runs west of Grafton so the whole city is inside, and its southern edge follows roads east to the sea at Diggers Camp | 6,754 km² road-routed (6,706 km² geometric) |
 
 The Victorian border runs 1,753 km: the River Murray from the South Australian
 corner up to its source, then the straight survey line south-east to Cape Howe.
@@ -27,6 +27,13 @@ straight line due east at 29.8073 S — follows Armidale Road, Braunstone Road, 
 Orara Way, the Big River Way and the Pacific Highway, then Lookout, Stonehouse and
 Wooli Roads to the sea at Diggers Camp: **65.1 km of boundary, 57.5 km of it on
 roads**, in place of a 38.3 km line.
+
+**Deniliquin is inside.** It sits 34.9 km from the Victorian border, nearly 20 km
+outside the 15 km strip, so the routed boundary detours around it and rejoins the
+corridor east and west. Deniliquin has no orbital road — its roads are dead-end
+radials off the centre — so the boundary follows the Cobb Highway in from Mathoura
+and the Riverina Highway and Tocumwal Road out to the east, and holds a true 5 km
+arc across the west and north where no road ring exists.
 
 **Casino is inside.** It sits 43.6 km from the coast, 8 km outside the 35 km strip,
 so the western boundary detours around the town at 5 km — Ellangowan Road, Johnsons
@@ -120,6 +127,8 @@ data/towns.json             Localities with zone + distance to border
 HANDOVER.md                 Project state, decisions, open questions, limitations
 NEW-SESSION-BRIEF.md        Paste-ready context for a fresh session
 docs/METHODOLOGY.md         How the geometry was computed, and its limits
+data/oa1_deniliquin_route.txt  Open Area 1 — the 5 km Deniliquin detour
+data/oa1_route_deniliquin.txt  Open Area 1 — routed boundary with the detour spliced in
 data/oa2_route.txt          Open Area 2 — routed western boundary
 data/oa2_route_casino.txt   Open Area 2 — western boundary with the Casino detour spliced in
 data/oa2_casino_route.txt   Open Area 2 — the 5 km Casino detour on its own

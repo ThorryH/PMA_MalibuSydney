@@ -30,7 +30,7 @@ W = lambda g: transform(inv, g)
 
 CASINO    = Point(153.048, -28.861)     # town centre used throughout the project
 CAS_RAD   = 5000                         # the 5 km rule
-NECK_WIN  = 8000                         # window used to build the geometric neck
+NECK_PAD  = 5000                         # neck window = gap to the band + this
 SETBACK   = 500                          # metres clear of the Queensland border
 MIN_PART  = 50_000                       # drop fragments below 5 ha
 SOUTH_LAT = -29.8073
@@ -111,9 +111,11 @@ fc = json.load(open(ROOT / 'data/pma.geojson'))
 by = {f['properties']['id']: shape(f['geometry']) for f in fc['features']}
 band = P(by['open2_exact'])
 disc = P(CASINO).buffer(CAS_RAD, resolution=64)
-neck = unary_union([disc, band.intersection(disc.buffer(NECK_WIN))]).convex_hull
+win  = band.distance(disc) + NECK_PAD      # same neck rule as Deniliquin
+neck = unary_union([disc, band.intersection(disc.buffer(win))]).convex_hull
 oa2_exact = clip(unary_union([band, disc, neck]))
-print(f"Open Area 2 (geometric, Casino in) {oa2_exact.area/1e6:,.0f} km2 (band was {band.area/1e6:,.0f})")
+print(f"Open Area 2 (geometric, Casino in) {oa2_exact.area/1e6:,.0f} km2 "
+      f"(band was {band.area/1e6:,.0f}; neck window {win/1000:.1f} km)")
 
 # ---- Active PMA -----------------------------------------------------------
 o1e, o1r = P(by['open_exact']), P(by['open_road'])

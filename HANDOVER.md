@@ -21,9 +21,9 @@ planning artefact, not a legal instrument.
 
 | Area | Rule | Road-routed | Geometric |
 |---|---|---|---|
-| **Open Area 1** | Within **15 km north of the NSW/VIC border**, measured perpendicular to the border | **17,545 km²** | 17,670 km² |
-| **Open Area 2** | Coastal strip from **Grafton north to the Queensland border**, held at Grafton's own distance from the coast (**35.0 km**), plus **Casino** behind a 5 km road-routed boundary; southern edge routed on roads east to the sea at Diggers Camp | **6,754 km²** | 6,696 km² |
-| **Active PMA** | The balance of NSW + ACT, held 500 m clear of the QLD border | **763,006 km²** | 762,937 km² |
+| **Open Area 1** | Within **15 km north of the NSW/VIC border**, measured perpendicular to the border, plus **Deniliquin** behind a 5 km road-routed boundary | **17,993 km²** | 18,060 km² |
+| **Open Area 2** | Coastal strip from **Grafton north to the Queensland border**, held at Grafton's own distance from the coast (**35.0 km**), plus **Casino** behind a 5 km road-routed boundary; southern edge routed on roads east to the sea at Diggers Camp | **6,754 km²** | 6,706 km² |
+| **Active PMA** | The balance of NSW + ACT, held 500 m clear of the QLD border | **762,558 km²** | 762,539 km² |
 
 The NSW/VIC border itself measures **1,753 km** — the River Murray from the South
 Australian corner to its source, then the straight survey line to Cape Howe. The
@@ -37,7 +37,8 @@ distance line, kept for comparison and as the definition of record.
 
 ### Rule history — how it got here
 
-1. Open Area 1 was originally **50 km** (53,600 km²), reduced to **15 km**.
+1. Open Area 1 was originally **50 km** (53,600 km²), reduced to **15 km**, then
+   extended to take in **Deniliquin** behind its own 5 km road-routed boundary.
 2. Open Area 2's southern edge was originally a line through Grafton. It moved
    south to **29.8073 S** so the whole city sits inside.
 3. A separate 570 km² Grafton "ring-fence" existed briefly and was **removed** —
@@ -69,6 +70,17 @@ connected public road network exists within 12 km there.
 Casino–Coraki Road → Bruxner Hwy → Kyogle Road → Nimbin Road → Routes 32/34 →
 Queensland border near Murwillumbah. 168 km on roads, 13 km on the line.
 
+**Open Area 1's Deniliquin detour**, south to north to east: Melvilles Rd →
+Taylors Bridge Rd → Gulpa Creek Rd → Walliston Rd → **Cobb Hwy** north from
+Mathoura → *a true 5 km arc across the west and north* → Cobb Hwy → Mavers Rd →
+Atkinsons Lane → Lawrence Rd → Conargo Rd → Claremont Lane → Lawson Lane →
+Aratula North Rd → **Riverina Hwy** → Tocumwal Rd → Gollops Rd. 80.2 km,
+replacing 32.2 km. 6 of 11 legs on road. **Deniliquin has no orbital road** — its
+roads are dead-end radials, so with the town core excluded there is no connected
+path at all around the west and north, at any radius. That is why five legs hold
+the geometric circle rather than a road. Closest approach to the town centre
+4.99 km.
+
 **Open Area 2's Casino detour**, south to north: Tatham Ellangowan Rd →
 Ellangowan Rd → Johnsons Rd → Summerland Way → Vouts Rd → Llewellyns Rd →
 Bruxner Hwy → Taylors Lane → Sextonville Rd → Reynolds Rd → Savilles Rd →
@@ -92,9 +104,15 @@ locality, but it is the least tidy part of the boundary.
 **Open Area 1 (in):** Albury, Moama, Tocumwal, Corowa, Barham, Mulwala, Howlong,
 Barooga, Euston, Buronga, Dareton, Tooleybuc, Mathoura, Khancoban.
 
-**Open Area 1 (out, and notable):** Deniliquin 34.9 km, Culcairn 36.4, Berrigan
-27.2, Holbrook 25.9, Finley 18.0, Eden 40.9, Jindabyne 41.7, Bombala 30.5 — all
-of these *were* inside at 50 km.
+**Open Area 1 (out, and notable):** Culcairn 36.4 km, Berrigan 27.2, Holbrook
+25.9, Finley 18.0, Eden 40.9, Jindabyne 41.7, Bombala 30.5 — all of these *were*
+inside at 50 km. **Deniliquin (34.9 km) is now in**, behind its own 5 km boundary,
+and brought Deniliquin North and Cornalla with it on both versions and Tuppal on
+the routed one.
+
+**Mathoura** is `open` geometrically but `active` on the routed boundary — it is
+8.2 km from the border, inside the 15 km line, but the routed line runs north of
+it. That predates the Deniliquin work; the "in" list above is the geometric one.
 
 **Open Area 2 (in):** Grafton, South Grafton, Junction Hill, Clarenza, Waterview
 Heights, Ulmarra, Maclean, Yamba, Iluka, Evans Head, Woodburn, Coraki, Ballina,
@@ -109,9 +127,9 @@ both versions, and **Naughtons Gap** and **Yorklea** in on the routed version
 only.
 
 4,118 localities are classified in `data/towns.json`. On the operative
-**road-routed** boundaries: 107 in Open Area 1, 336 in Open Area 2, 1,437 Active
-PMA, 2,238 Victorian (context only). On the geometric boundaries: 110 / 334 /
-1,436. Each locality carries both — `zr` is routed, `z` is geometric.
+**road-routed** boundaries: 111 in Open Area 1, 336 in Open Area 2, 1,433 Active
+PMA, 2,238 Victorian (context only). On the geometric boundaries: 113 / 328 /
+1,439. Each locality carries both — `zr` is routed, `z` is geometric.
 
 ## 4. Open questions for the business
 
@@ -122,8 +140,10 @@ These are decisions nobody has made yet. They are not bugs.
    Kyogle is meant to be in, it needs either its own treatment (the Casino method
    would work) or an anchor distance of ~55 km, which would redraw the whole
    strip. **Casino was resolved in favour of inclusion** and is now inside.
-2. **Deniliquin is now outside Open Area 1** at 34.9 km. It was inside at 50 km.
-   Worth confirming that is intended.
+2. ~~Deniliquin outside Open Area 1~~ — **resolved**: it is now inside behind a
+   5 km road-routed boundary. Culcairn (36.4 km), Berrigan (27.2) and Holbrook
+   (25.9) are the nearest remaining towns that were inside at 50 km; none has
+   been asked for.
 3. **Open Area 2's southern edge** is now routed on roads around the nominal
    29.8073 S, which sits ~13 km south of Grafton's centre. 29.8073 S was chosen
    as the minimum latitude that encloses the whole built-up area. If a cleaner
@@ -158,7 +178,8 @@ make lock PW=malsyd
 | `build_open_area_2a.py` | Coastline extraction, Grafton distance, 35 km buffer |
 | `build_open_area_2.py` | Open Area 2 routed western boundary and area arithmetic |
 | `build_oa2_south_route.py` | Open Area 2 routed **southern** edge; rewrites `open2_road`, `active_road` and every locality's `zr` |
-| `build_oa2_casino_border.py` | Splices the **Casino** detour into the western boundary, applies the **100 m QLD border setback** to all four polygons, rewrites `z` and `zr` |
+| `build_oa1_deniliquin.py` | Splices the **Deniliquin** detour into Open Area 1's routed boundary; rewrites `open_road`, `open_exact`, `line_snap`. Runs **before** the Casino script |
+| `build_oa2_casino_border.py` | Splices the **Casino** detour into Open Area 2's western boundary, applies the **500 m QLD border setback** to all four polygons, recomputes the Active PMA and rewrites `z` and `zr` |
 | `build_towns.py` | Classifies 4,118 localities by zone and distance |
 | `build_overview.py` | The state overview PNG |
 | `build_map.py` | Inlines everything into the single-file map |

@@ -522,3 +522,117 @@ and `zr`. It reads the border from `data/qld_border.geojson`, which
 result carried out of the browser as a delta-encoded polyline and verified by
 checksum on arrival. The Overpass query and the Dijkstra pass run in a browser page on the
 Overpass origin, as for the other routed boundaries.
+
+---
+
+# Revision — Deniliquin folded into Open Area 1
+
+Deniliquin sits **34.9 km north of the Victorian border** — nearly 20 km outside
+the 15 km strip — and has been an open question in every handover since the rule
+was cut from 50 km to 15 km. It is now inside, on the same terms as Casino: the
+routed boundary detours around the town and rejoins the corridor east and west,
+so Open Area 1 stays one continuous area rather than gaining a bolt-on ring.
+
+## Deniliquin has no orbital road
+
+This is the one place the Casino method could not be applied unchanged, and the
+reason is a fact about the town rather than a choice.
+
+Casino has a rough ring at 5 km — Ellangowan Road, Johnsons Road, Vouts Road,
+Llewellyns Road — so excluding the town core from the graph still left a
+connected path around it. Deniliquin does not. Its roads are dead-end radials off
+the centre, and with the core excluded there is **no connected path at all**
+around the west and north side. Not a long one; none. Unconstrained Dijkstra
+returns no route between five consecutive pairs of ring anchors.
+
+Nor does widening help. Testing complete 12-arc rings at every radius:
+
+| radius | arcs on road |
+|---|---|
+| 5 km | 5 of 12 |
+| 8 km | **9 of 12** |
+| 10 km | 7 of 12 |
+| 12 km | 7 of 12 |
+| 15 km | 7 of 12 |
+| 20 km | 7 of 12 |
+
+No radius closes the ring. 8 km is the best available anywhere and still leaves
+three gaps.
+
+So the boundary does what this project already does in the Sunraysia mallee and
+the Snowy high country: **follows roads where roads exist, and holds the
+geometric line where they do not.** Six of eleven legs route on road; the five
+across the west and north hold a **true 5 km circular arc**, densified every 3°,
+rather than a chord between anchors — so the 5 km rule is honoured exactly there
+rather than approximately.
+
+## Method
+
+Same parameters as Casino, with the arc fallback added.
+
+- OpenStreetMap ways of class `motorway` … `residential` for 144.45–145.60 E,
+  36.00–35.30 S — **2,547 ways, 21,472 graph nodes, 22,360 edges**.
+- Anchors on the **5 km circle** around the town centre (144.95658 E,
+  35.52824 S) every 30° of arc, from bearing 190° round the west and north to
+  bearing 100°, plus two attachment points on the existing boundary.
+- Each anchor snaps to the nearest road node **at least 5 km from the town**; all
+  twelve snapped, the worst at 1.6 km, every one landing 5.0–6.0 km out.
+- Road nodes within **4.2 km of the centre** are deleted from the graph, so no
+  shortest path can cut back through Deniliquin.
+- Legs joined by Dijkstra under the usual 2.6 × direct + 8 km rule; where no
+  route exists, the 5 km arc is held.
+- The assembled line is de-spiked, one self-intersection loop excised, and
+  checked simple before it is used to cut the state.
+
+Closest approach of the finished boundary to the town centre: **4.99 km**
+(routed) and **5.00 km** (geometric).
+
+## The detour, south to north to east
+
+Melvilles Road → Taylors Bridge Road → Gulpa Creek Road → Walliston Road →
+**Cobb Highway** (north from Mathoura) → *5 km arc across the west and north* →
+Cobb Highway → Mavers Road → Atkinsons Lane → Lawrence Road → Conargo Road →
+Claremont Lane → Lawson Lane → Aratula North Road → **Riverina Highway** →
+Tocumwal Road → Gollops Road.
+
+**80.2 km**, replacing 32.2 km of the old boundary. It leaves at 35.7392 S,
+144.9348 E and rejoins at 35.6681 S, 145.2437 E.
+
+## The neck rule, generalised
+
+Casino's neck was built from the convex hull of the 5 km disc and the part of the
+band within a fixed 8 km window. That constant does not survive Deniliquin, whose
+disc edge sits **14.9 km** from the 15 km band — an 8 km window clips nothing and
+the hull leaves the disc detached.
+
+The rule is now **window = the gap from the disc to the band + 5 km**, applied to
+both. Deniliquin gets a 19.9 km window; Casino's works out at 8.6 km, which moves
+its geometric area by 7 km² (6,713 → 6,706 km²) and nothing else.
+
+## Effect
+
+| | Before | After |
+|---|---|---|
+| Open Area 1 — road-routed | 17,545 km² | **17,993 km²** |
+| Open Area 1 — geometric | 17,671 km² | **18,060 km²** |
+| Open Area 2 — geometric | 6,713 km² | 6,706 km² *(neck rule only)* |
+| Active PMA — road-routed | 763,006 km² | **762,558 km²** |
+| Active PMA — geometric | 762,937 km² | **762,539 km²** |
+
+Four localities join Open Area 1: **Deniliquin**, **Deniliquin North** and
+**Cornalla** on both versions, and **Tuppal** on the routed version only.
+
+> Unchanged but worth knowing: **Mathoura** has always been `open` on the
+> geometric boundary and `active` on the routed one — it sits 8.2 km from the
+> border, inside the 15 km line, but the routed boundary runs north of it. That
+> predates this work and is not a consequence of it. The handover's "Open Area 1
+> (in)" list reflects the geometric version.
+
+## Reproducing it
+
+`scripts/build_oa1_deniliquin.py` reads `data/oa1_deniliquin_route.txt`, splices
+it into the routed Open Area 1 boundary to produce
+`data/oa1_route_deniliquin.txt`, cuts New South Wales with the result and
+rewrites `open_road`, `open_exact` and `line_snap`. It runs **before**
+`build_oa2_casino_border.py`, which recomputes the Active PMA and every
+locality's zone from whatever the two open areas have become.
