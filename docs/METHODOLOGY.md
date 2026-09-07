@@ -358,3 +358,126 @@ against live Overpass data; the sandbox has no route to the Overpass mirrors, so
 the query and the Dijkstra pass are run in a browser page on the Overpass origin
 and only the resulting polyline is brought back — the same workaround used for
 the western boundary.
+
+---
+
+# Revision — Casino folded in, and a 100 m setback from the Queensland border
+
+Two changes, both requested by the business.
+
+## 1. Casino inside Open Area 2, behind a 5 km road-routed boundary
+
+Casino is **43.6 km from the coast** — 8 km outside the 35 km strip — and was
+listed as an open question in every earlier handover. It is now inside.
+
+A detached 5 km ring was rejected: the project already removed one bolt-on
+polygon (the 570 km² Grafton ring-fence) and would have reintroduced the same
+problem. Instead the **western boundary of Open Area 2 detours around Casino**
+and rejoins the corridor north and south, so Open Area 2 remains one continuous
+area.
+
+### Method
+
+The routing parameters match the rest of the project, with one addition.
+
+- OpenStreetMap ways of class `motorway` … `residential` were queried through
+  Overpass for 152.80–153.38 E, 29.12–28.60 S — **3,846 ways, 45,348 graph
+  nodes, 46,249 edges**.
+- Anchors are placed on the **5 km circle around the town centre**
+  (153.048 E, 28.861 S) every 30° of arc — about 2.6 km apart, tighter than the
+  project's usual 4 km because the radius is small — from bearing 160° round the
+  west to bearing 10°, plus the two attachment points on the existing boundary.
+- Each anchor snaps to the **nearest road node that is itself at least 5 km from
+  Casino**, so no anchor sits inside the ring. All ten snapped, the worst at
+  1.1 km; every anchor landed 5.1–6.1 km from the town centre.
+- **Road nodes within 4.2 km of the town centre are deleted from the graph before
+  routing.** Without this, the sparse road network west of Casino sent three of
+  the shortest paths straight back through the middle of town — the routed
+  boundary passed within 160 m of the town centre. With it, the closest approach
+  is **4.74 km**.
+- Consecutive anchors are joined by Dijkstra shortest paths, accepted under the
+  usual 2.6 × direct + 8 km rule. **6 of 9 legs routed on roads**; three short
+  arcs on the western side keep the geometric chord, which cuts about 170 m
+  inside the 5 km circle.
+
+### The detour, south to north
+
+Tatham Ellangowan Road → Ellangowan Road → Johnsons Road → Summerland Way →
+Vouts Road → Llewellyns Road → Bruxner Highway → Taylors Lane → Sextonville Road
+→ Reynolds Road → Savilles Road → Manifold Road → Naughtons Gap Road.
+
+**46.6 km**, replacing 56.4 km of the old boundary — the detour is shorter than
+what it replaces, because the old line wandered through a series of tight
+switchbacks east of Casino. It leaves the old boundary at 29.0136 S, 153.0716 E
+and rejoins it at 28.7928 S, 153.1132 E.
+
+### The geometric version
+
+The geometric rule becomes: **within 35 km of the coast, or within 5 km of
+Casino, or in the corridor joining the two** — the corridor being the convex hull
+of the 5 km disc and the nearest 8 km window of the 35 km band, which produces the
+two natural tangent lines. That takes the geometric area from 6,545 km² to
+**6,713 km²**: 79 km² for the disc itself and 89 km² for the neck.
+
+### Who moves
+
+Eight localities join Open Area 2: **Casino**, Greenridge, Irvington, Spring
+Grove, Tomki, Wooroowoolgan (all in both versions), and Naughtons Gap and Yorklea
+(routed version only). **Kyogle stays out** at 54 km from the coast and 27 km from
+Casino — it was the other half of the original open question and nothing in this
+change reaches it.
+
+## 2. Every polygon held 100 m south of the NSW/Queensland border
+
+The NSW/QLD border runs **1,501 km**, from the South Australian corner along the
+Dumaresq and the Macpherson Range to Point Danger.
+
+Before this change the PMA polygons were derived directly from the state outline
+and inherited its topology noise: Open Area 2 spilled **0.42 km² into Queensland**
+and the Active PMA **0.017 km²**, in four slivers between Tweed Heads and the
+Nightcap Range where the published NSW and Queensland polygons overlap each other.
+
+Every PMA polygon is now built through a single clip:
+
+1. intersect with New South Wales ∪ the ACT;
+2. subtract Queensland outright;
+3. subtract a **100 m buffer of the shared border line**;
+4. drop any resulting fragment under **5 hectares** — the setback shaves a few
+   specks off the coastal end at Point Danger, and detached confetti on the map
+   is worse than a 0.03 km² gap;
+5. re-validate, in both EPSG:3112 and WGS84 (a polygon valid in the projected CRS
+   can pinch into a self-intersection once reprojected).
+
+**Verification:** 1,506 points sampled at 2 km intervals along the border, each
+tested 50 m to the south. No PMA polygon reaches any of them. Measured minimum
+clearance from the border line to the nearest polygon edge is **99.9 m**, and the
+area of every polygon inside Queensland is **zero**.
+
+The border line is published as `qld_border` in `data/pma.geojson` and draws on
+the map with the Victorian border under the **State borders** toggle.
+
+> The state boundary data is ~1:250k. A 100 m setback is well inside that
+> tolerance — it guarantees the *drawn* boundary never touches the *drawn* border,
+> which is what was asked, but it is not a survey offset from the legal border.
+
+## Effect
+
+| | Before | After |
+|---|---|---|
+| Open Area 2 — road-routed | 6,526 km² | **6,770 km²** |
+| Open Area 2 — geometric | 6,545 km² | **6,713 km²** |
+| Active PMA — road-routed | 763,642 km² | **763,248 km²** |
+| Active PMA — geometric | 763,497 km² | **763,180 km²** |
+| Open Area 1 | 17,545 / 17,671 km² | unchanged |
+
+Open Area 2 gains 244 km² net: about 394 km² for Casino, less 150 km² given up
+along the border by the setback (1,501 km × 100 m).
+
+## Reproducing it
+
+`scripts/build_oa2_casino_border.py` reads `data/oa2_casino_route.txt` (the routed
+detour), splices it into `data/oa2_route.txt` to produce
+`data/oa2_route_casino.txt`, cuts New South Wales with the combined boundary,
+applies the border clip to all four polygons and rewrites every locality's `z`
+and `zr`. The Overpass query and the Dijkstra pass run in a browser page on the
+Overpass origin, as for the other routed boundaries.

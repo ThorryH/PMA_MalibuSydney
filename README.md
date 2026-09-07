@@ -14,8 +14,8 @@ dealership in Sydney.
 | Zone | Definition | Area |
 |---|---|---|
 | **Open Area 1** | Everything within **15 km north of the NSW/VIC border**, measured perpendicular to the border | 17,545 km² road-routed (17,670 km² geometric) |
-| **Active PMA** | The balance of New South Wales + the ACT — the NSW dealer's area | 763,642 km² road-routed (763,497 km² geometric) |
-| **Open Area 2** | The coastal strip from **Grafton north to the Queensland border**, held at Grafton's distance from the coast — **35.0 km**. The routed boundary runs west of Grafton so the whole city is inside, and its southern edge follows roads east to the sea at Diggers Camp | 6,526 km² road-routed (6,545 km² geometric) |
+| **Active PMA** | The balance of New South Wales + the ACT — the NSW dealer's area, held 100 m clear of the Queensland border | 763,248 km² road-routed (763,180 km² geometric) |
+| **Open Area 2** | The coastal strip from **Grafton north to the Queensland border**, held at Grafton's distance from the coast — **35.0 km** — **plus Casino**, enclosed behind a 5 km road-routed boundary. The routed line runs west of Grafton so the whole city is inside, and its southern edge follows roads east to the sea at Diggers Camp | 6,770 km² road-routed (6,713 km² geometric) |
 
 The Victorian border runs 1,753 km: the River Murray from the South Australian
 corner up to its source, then the straight survey line south-east to Cape Howe.
@@ -28,10 +28,21 @@ Orara Way, the Big River Way and the Pacific Highway, then Lookout, Stonehouse a
 Wooli Roads to the sea at Diggers Camp: **65.1 km of boundary, 57.5 km of it on
 roads**, in place of a 38.3 km line.
 
-> **The whole of Grafton is inside Open Area 2.** The routed boundary runs west of
-> the city, so Grafton, South Grafton, Junction Hill, Clarenza, Waterview Heights
-> and Ulmarra all fall inside — on roads, with no separate ring-fence.
-> Copmanhurst, Coutts Crossing, Casino and Kyogle stay outside.
+**Casino is inside.** It sits 43.6 km from the coast, 8 km outside the 35 km strip,
+so the western boundary detours around the town at 5 km — Ellangowan Road, Johnsons
+Road, the Summerland Way, Llewellyns Road, the Bruxner Highway, Sextonville Road and
+Naughtons Gap Road — and rejoins the corridor north and south. Open Area 2 stays one
+continuous area; there is no separate ring. Kyogle remains outside.
+
+**Nothing touches Queensland.** Every polygon is held 100 m south of the NSW/QLD
+border, verified at 2 km intervals along all 1,501 km of it.
+
+> **Grafton and Casino are both inside Open Area 2.** The routed boundary runs west
+> of Grafton — so Grafton, South Grafton, Junction Hill, Clarenza, Waterview Heights
+> and Ulmarra fall inside — and detours around Casino at 5 km, taking in Greenridge,
+> Irvington, Spring Grove, Tomki, Wooroowoolgan, Naughtons Gap and Yorklea with it.
+> Both on roads, with no separate ring-fence. Copmanhurst, Coutts Crossing and
+> Kyogle stay outside.
 
 ## What's in the map
 
@@ -105,6 +116,8 @@ HANDOVER.md                 Project state, decisions, open questions, limitation
 NEW-SESSION-BRIEF.md        Paste-ready context for a fresh session
 docs/METHODOLOGY.md         How the geometry was computed, and its limits
 data/oa2_route.txt          Open Area 2 — routed western boundary
+data/oa2_route_casino.txt   Open Area 2 — western boundary with the Casino detour spliced in
+data/oa2_casino_route.txt   Open Area 2 — the 5 km Casino detour on its own
 data/oa2_south_route.txt    Open Area 2 — routed southern edge (Grafton area → coast)
 scripts/                    Reproducible build
 local/                      Unprotected map — git-ignored

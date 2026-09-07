@@ -22,8 +22,8 @@ planning artefact, not a legal instrument.
 | Area | Rule | Road-routed | Geometric |
 |---|---|---|---|
 | **Open Area 1** | Within **15 km north of the NSW/VIC border**, measured perpendicular to the border | **17,545 km²** | 17,670 km² |
-| **Open Area 2** | Coastal strip from **Grafton north to the Queensland border**, held at Grafton's own distance from the coast (**35.0 km**), southern edge routed on roads from the Grafton area east to the sea at Diggers Camp | **6,526 km²** | 6,545 km² |
-| **Active PMA** | The balance of NSW + ACT | **763,642 km²** | 763,497 km² |
+| **Open Area 2** | Coastal strip from **Grafton north to the Queensland border**, held at Grafton's own distance from the coast (**35.0 km**), plus **Casino** behind a 5 km road-routed boundary; southern edge routed on roads east to the sea at Diggers Camp | **6,770 km²** | 6,713 km² |
+| **Active PMA** | The balance of NSW + ACT, held 100 m clear of the QLD border | **763,248 km²** | 763,180 km² |
 
 The NSW/VIC border itself measures **1,753 km** — the River Murray from the South
 Australian corner to its source, then the straight survey line to Cape Howe.
@@ -41,9 +41,15 @@ distance line, kept for comparison and as the definition of record.
    the routed boundary now runs west of the city instead, achieving the same
    result without a bolt-on polygon.
 4. The southern edge was a straight line due east at 29.8073 S until it too was
-   **road-routed** (this revision). 29.8073 S remains the nominal latitude and
-   the geometric version of the line is kept; the operative edge follows roads
-   and stays within about 5 km either side of it.
+   **road-routed**. 29.8073 S remains the nominal latitude and the geometric
+   version of the line is kept; the operative edge follows roads and stays within
+   about 5 km either side of it.
+5. **Casino was folded in** (this revision) behind a 5 km road-routed boundary,
+   as one continuous area rather than a detached ring. That closes open question
+   1 below for Casino; Kyogle is untouched and still outside.
+6. **Every polygon is now held 100 m south of the NSW/QLD border** (this
+   revision). Before it, Open Area 2 spilled 0.42 km² into Queensland through
+   topology noise in the source state outlines.
 
 ## 3. Where the boundaries actually run
 
@@ -57,6 +63,14 @@ connected public road network exists within 12 km there.
 **Open Area 2**, south to north: west of Grafton → Summerland Way corridor →
 Casino–Coraki Road → Bruxner Hwy → Kyogle Road → Nimbin Road → Routes 32/34 →
 Queensland border near Murwillumbah. 168 km on roads, 13 km on the line.
+
+**Open Area 2's Casino detour**, south to north: Tatham Ellangowan Rd →
+Ellangowan Rd → Johnsons Rd → Summerland Way → Vouts Rd → Llewellyns Rd →
+Bruxner Hwy → Taylors Lane → Sextonville Rd → Reynolds Rd → Savilles Rd →
+Manifold Rd → Naughtons Gap Rd. 46.6 km, replacing 56.4 km of switchbacks east
+of the town. 6 of 9 legs on roads; the three short western arcs keep the
+geometric chord, ~170 m inside the 5 km circle. Closest approach to the town
+centre 4.74 km.
 
 **Open Area 2's southern edge**, west to east: McCarthys Rd → Armidale Rd →
 Braunstone Rd → Orara Way → Poley House Rd → Dinjerra Rd → Big River Way →
@@ -82,20 +96,27 @@ Heights, Ulmarra, Maclean, Yamba, Iluka, Evans Head, Woodburn, Coraki, Ballina,
 Alstonville, Lennox Head, Byron Bay, Bangalow, Mullumbimby, Brunswick Heads,
 Ocean Shores, Lismore, Nimbin, Murwillumbah, Kingscliff, Tweed Heads.
 
-**Open Area 2 (out):** Copmanhurst, Coutts Crossing, Casino (43 km from coast),
-Kyogle (54 km), Wooli, Coffs Harbour. Routing the southern edge moved
-**Mcphersons Crossing** and **Pillar Valley** out; nothing else changed side.
+**Open Area 2 (out):** Copmanhurst, Coutts Crossing, Kyogle (54 km from coast,
+27 km from Casino), Wooli, Coffs Harbour. Routing the southern edge moved
+**Mcphersons Crossing** and **Pillar Valley** out. Folding in Casino moved
+**Casino**, Greenridge, Irvington, Spring Grove, Tomki and Wooroowoolgan in on
+both versions, and **Naughtons Gap** and **Yorklea** in on the routed version
+only.
 
-4,118 localities are classified in `data/towns.json`: 110 in Open Area 1, 322 in
-Open Area 2, 1,448 Active PMA, 2,238 Victorian (context only).
+4,118 localities are classified in `data/towns.json`. On the operative
+**road-routed** boundaries: 107 in Open Area 1, 336 in Open Area 2, 1,437 Active
+PMA, 2,238 Victorian (context only). On the geometric boundaries: 110 / 328 /
+1,442. Each locality carries both — `zr` is routed, `z` is geometric.
 
 ## 4. Open questions for the business
 
 These are decisions nobody has made yet. They are not bugs.
 
-1. **Casino and Kyogle sit outside Open Area 2** by 8 km and 19 km. Both are
-   commercially meaningful for the Northern Rivers. If they were meant to be in,
-   the anchor distance needs to be ~45 km rather than Grafton's 35 km.
+1. **Kyogle sits outside Open Area 2** at 54 km from the coast — 19 km beyond the
+   35 km rule and 27 km from Casino, so the Casino detour does not reach it. If
+   Kyogle is meant to be in, it needs either its own treatment (the Casino method
+   would work) or an anchor distance of ~55 km, which would redraw the whole
+   strip. **Casino was resolved in favour of inclusion** and is now inside.
 2. **Deniliquin is now outside Open Area 1** at 34.9 km. It was inside at 50 km.
    Worth confirming that is intended.
 3. **Open Area 2's southern edge** is now routed on roads around the nominal
@@ -132,6 +153,7 @@ make lock PW=malsyd
 | `build_open_area_2a.py` | Coastline extraction, Grafton distance, 35 km buffer |
 | `build_open_area_2.py` | Open Area 2 routed western boundary and area arithmetic |
 | `build_oa2_south_route.py` | Open Area 2 routed **southern** edge; rewrites `open2_road`, `active_road` and every locality's `zr` |
+| `build_oa2_casino_border.py` | Splices the **Casino** detour into the western boundary, applies the **100 m QLD border setback** to all four polygons, rewrites `z` and `zr` |
 | `build_towns.py` | Classifies 4,118 localities by zone and distance |
 | `build_overview.py` | The state overview PNG |
 | `build_map.py` | Inlines everything into the single-file map |

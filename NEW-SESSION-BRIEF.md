@@ -12,15 +12,19 @@ attached is the full repo. Read `HANDOVER.md` first, then `docs/METHODOLOGY.md`.
 Quick orientation so you don't have to reverse-engineer it:
 
 - The PMA is all of NSW + ACT minus two **Open Areas**. Everything else is the
-  **Active PMA** (763,642 km²). Don't use the word "territory".
+  **Active PMA** (763,248 km²). Don't use the word "territory".
+- Every polygon is held **100 m south of the NSW/QLD border** — nothing touches or
+  crosses the state line, and that is checked at 2 km intervals along all 1,501 km.
 - **Open Area 1** — within 15 km north of the NSW/VIC border. Road-routed
   17,545 km², geometric 17,670 km².
 - **Open Area 2** — coastal strip from Grafton north to the QLD border, 35 km
   inland (Grafton's own distance from the coast). The southern edge is nominally
   29.8073 S but is **routed on roads** from the Grafton area east to the sea at
   Diggers Camp — the straight line is kept only as the geometric version.
-  Road-routed 6,526 km², geometric 6,545 km². The whole of Grafton is inside;
-  there is no separate ring-fence.
+  Road-routed 6,770 km², geometric 6,713 km². **Casino is inside** — it is 43.6 km
+  from the coast, so the western boundary detours around it at 5 km and rejoins
+  the corridor north and south, as one continuous area. Kyogle is still outside.
+  The whole of Grafton is inside too. There is no separate ring-fence for either.
 - Every boundary has a **road-routed** version and a **geometric** version. The
   road-routed one is operative and shown by default.
 
@@ -29,7 +33,9 @@ the nearest OpenStreetMap road node, join consecutive anchors with **Dijkstra
 shortest paths along road centrelines**. Where no connected road network exists
 within 12 km, the boundary keeps the geometric line rather than being dragged
 off-corridor. Anchor spacing matters — too wide and the route shortcuts through
-towns.
+towns. Where the boundary has to go *around* a town rather than past it (Casino),
+delete every road node within ~4 km of the town centre from the graph first, or
+the shortest paths cut straight back through it.
 
 Getting OSM data: the sandbox can't reach Overpass — the egress proxy refuses
 every mirror. The working method is to open `https://overpass.kumi.systems/` in a
@@ -48,7 +54,7 @@ OpenFreeMap vector tiles, no API key, AES-256 password gate (password `malsyd`).
 Do not reintroduce a keyed base map provider.
 
 Things still undecided that you should ask about rather than assume: whether
-Casino and Kyogle belong in Open Area 2; whether Deniliquin should be outside
+Kyogle belongs in Open Area 2 (Casino is settled — it's in); whether Deniliquin should be outside
 Open Area 1 now that it's 15 km; which boundary version is contractual; and
 whether the southern edge of Open Area 2 should keep following the road network
 or be redrawn on a single feature (the Clarence River, an LGA boundary, one
