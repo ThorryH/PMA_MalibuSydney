@@ -13,6 +13,7 @@ geometry:
 	cp work/pma.geojson work/towns.json data/
 	cp work/pma_state_overview.png assets/state-overview.png
 	python3 scripts/build_oa2_south_route.py
+	python3 scripts/decode_qld_border.py
 	python3 scripts/build_oa2_casino_border.py
 
 map:

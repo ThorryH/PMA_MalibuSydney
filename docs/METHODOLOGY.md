@@ -427,51 +427,89 @@ Grove, Tomki, Wooroowoolgan (all in both versions), and Naughtons Gap and Yorkle
 Casino — it was the other half of the original open question and nothing in this
 change reaches it.
 
-## 2. Every polygon held 100 m south of the NSW/Queensland border
+## 2. Every polygon held 500 m south of the real Queensland border
 
-The NSW/QLD border runs **1,501 km**, from the South Australian corner along the
-Dumaresq and the Macpherson Range to Point Danger.
+### The border itself was wrong first
 
-Before this change the PMA polygons were derived directly from the state outline
-and inherited its topology noise: Open Area 2 spilled **0.42 km² into Queensland**
-and the Active PMA **0.017 km²**, in four slivers between Tweed Heads and the
-Nightcap Range where the published NSW and Queensland polygons overlap each other.
+The setback is only as good as the line it is measured from, and the line this
+project had was not the border people see on a map. Every polygon was derived
+from `states.geojson`, whose NSW/QLD boundary is **313 vertices over 1,501 km** —
+a ~1:250k generalisation that cuts the corner off every meander of the Dumaresq,
+Macintyre and Barwon.
 
-Every PMA polygon is now built through a single clip:
+The border is now taken from **OpenStreetMap's administrative boundary**: the ways
+shared by the `admin_level=4` relations for New South Wales and Queensland, which
+is the same official line consumer maps render. Simplified to 20 m it is
+**4,845 vertices over 1,681 km** — 180 km longer, because it actually follows the
+rivers.
+
+How far apart they are, measured from the real border to the old line:
+
+| | |
+|---|---|
+| median | 109 m |
+| mean | 150 m |
+| 95th percentile | 377 m |
+| more than 100 m apart | 52.9% of the border |
+| more than 250 m apart | 18.1% |
+| more than 500 m apart | 0.7% |
+
+A 100 m setback measured against the old line was therefore inside the error of
+the line itself. Measured against the real border, 500 m is a real 500 m.
+
+*Licensing note: Google's boundary data is proprietary and was not used. The
+OpenStreetMap administrative boundary is the same underlying official border,
+under ODbL — already a data source in this project.*
+
+### The clip
+
+Every PMA polygon now goes through one clip:
 
 1. intersect with New South Wales ∪ the ACT;
-2. subtract Queensland outright;
-3. subtract a **100 m buffer of the shared border line**;
-4. drop any resulting fragment under **5 hectares** — the setback shaves a few
-   specks off the coastal end at Point Danger, and detached confetti on the map
-   is worse than a 0.03 km² gap;
-5. re-validate, in both EPSG:3112 and WGS84 (a polygon valid in the projected CRS
+2. intersect with **everything south of the real border** — NSW ∪ ACT is split by
+   the OSM line and only the southern side is kept, so no polygon can survive
+   north of it even where the 1:250k outline bulges across;
+3. subtract Queensland outright;
+4. subtract a **500 m buffer of the border**;
+5. drop any fragment under **5 hectares**;
+6. re-validate, in both EPSG:3112 and WGS84 (a polygon valid in the projected CRS
    can pinch into a self-intersection once reprojected).
 
-**Verification:** 1,506 points sampled at 2 km intervals along the border, each
-tested 50 m to the south. No PMA polygon reaches any of them. Measured minimum
-clearance from the border line to the nearest polygon edge is **99.9 m**, and the
-area of every polygon inside Queensland is **zero**.
+The 5 km of border east of Point Danger is maritime — the boundary continues out
+to sea — and is trimmed, since the PMA ends at the coast.
 
-The border line is published as `qld_border` in `data/pma.geojson` and draws on
-the map with the Victorian border under the **State borders** toggle.
+Before this work Open Area 2 spilled **0.42 km² into Queensland** and the Active
+PMA **0.017 km²**, in slivers where the published NSW and Queensland polygons
+overlap each other around Tweed Heads.
 
-> The state boundary data is ~1:250k. A 100 m setback is well inside that
-> tolerance — it guarantees the *drawn* boundary never touches the *drawn* border,
-> which is what was asked, but it is not a survey offset from the legal border.
+**Verification:** 1,681 points sampled at 1 km intervals along the border, each
+tested at 100, 250, 400 and 450 m to the south. **No PMA polygon contains any of
+them.** The first samples fall inside at 600 m. Measured minimum clearance from
+the border line to the nearest polygon edge is **498.8 m**, and the area of every
+polygon inside Queensland is **zero**.
+
+The border is published as `qld_border` in `data/pma.geojson` and draws on the map
+with the Victorian border under the **State borders** toggle.
+
+> Note the two borders in this project are now at different resolutions: the
+> Queensland border is the OSM administrative line, the Victorian border is still
+> the 1:250k outline. Open Area 1 was not in scope for this change. If the same
+> treatment is wanted on the Murray, it is the same method.
 
 ## Effect
 
 | | Before | After |
 |---|---|---|
-| Open Area 2 — road-routed | 6,526 km² | **6,770 km²** |
-| Open Area 2 — geometric | 6,545 km² | **6,713 km²** |
-| Active PMA — road-routed | 763,642 km² | **763,248 km²** |
-| Active PMA — geometric | 763,497 km² | **763,180 km²** |
+| Open Area 2 — road-routed | 6,526 km² | **6,754 km²** |
+| Open Area 2 — geometric | 6,545 km² | **6,696 km²** |
+| Active PMA — road-routed | 763,642 km² | **763,006 km²** |
+| Active PMA — geometric | 763,497 km² | **762,937 km²** |
 | Open Area 1 | 17,545 / 17,671 km² | unchanged |
 
-Open Area 2 gains 244 km² net: about 394 km² for Casino, less 150 km² given up
-along the border by the setback (1,501 km × 100 m).
+Open Area 2 gains 228 km² net: about 394 km² for Casino, less what the setback
+gives up along the border. Across all zones the 500 m setback removes 408 km² —
+well under the naive 1,681 km × 500 m, because the border meanders tightly enough
+that the buffer overlaps itself through most of the river sections.
 
 ## Reproducing it
 
@@ -479,5 +517,8 @@ along the border by the setback (1,501 km × 100 m).
 detour), splices it into `data/oa2_route.txt` to produce
 `data/oa2_route_casino.txt`, cuts New South Wales with the combined boundary,
 applies the border clip to all four polygons and rewrites every locality's `z`
-and `zr`. The Overpass query and the Dijkstra pass run in a browser page on the
+and `zr`. It reads the border from `data/qld_border.geojson`, which
+`scripts/decode_qld_border.py` produces from `data/qld_border.enc` — the Overpass
+result carried out of the browser as a delta-encoded polyline and verified by
+checksum on arrival. The Overpass query and the Dijkstra pass run in a browser page on the
 Overpass origin, as for the other routed boundaries.

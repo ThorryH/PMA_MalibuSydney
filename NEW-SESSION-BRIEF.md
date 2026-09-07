@@ -12,16 +12,20 @@ attached is the full repo. Read `HANDOVER.md` first, then `docs/METHODOLOGY.md`.
 Quick orientation so you don't have to reverse-engineer it:
 
 - The PMA is all of NSW + ACT minus two **Open Areas**. Everything else is the
-  **Active PMA** (763,248 km²). Don't use the word "territory".
-- Every polygon is held **100 m south of the NSW/QLD border** — nothing touches or
-  crosses the state line, and that is checked at 2 km intervals along all 1,501 km.
+  **Active PMA** (763,006 km²). Don't use the word "territory".
+- Every polygon is held **500 m south of the NSW/QLD border**. That border is the
+  OpenStreetMap `admin_level=4` line (4,845 vertices, 1,681 km) in
+  `data/qld_border.geojson`, **not** the 1:250k `states.geojson` outline the rest of
+  the build uses — the old one ran a median 109 m from the real border. Nothing
+  touches or crosses the state line; checked at 1 km intervals along the whole
+  length. The Victorian border is still 1:250k.
 - **Open Area 1** — within 15 km north of the NSW/VIC border. Road-routed
   17,545 km², geometric 17,670 km².
 - **Open Area 2** — coastal strip from Grafton north to the QLD border, 35 km
   inland (Grafton's own distance from the coast). The southern edge is nominally
   29.8073 S but is **routed on roads** from the Grafton area east to the sea at
   Diggers Camp — the straight line is kept only as the geometric version.
-  Road-routed 6,770 km², geometric 6,713 km². **Casino is inside** — it is 43.6 km
+  Road-routed 6,754 km², geometric 6,696 km². **Casino is inside** — it is 43.6 km
   from the coast, so the western boundary detours around it at 5 km and rejoins
   the corridor north and south, as one continuous area. Kyogle is still outside.
   The whole of Grafton is inside too. There is no separate ring-fence for either.

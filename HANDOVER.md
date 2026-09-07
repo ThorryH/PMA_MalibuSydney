@@ -22,11 +22,14 @@ planning artefact, not a legal instrument.
 | Area | Rule | Road-routed | Geometric |
 |---|---|---|---|
 | **Open Area 1** | Within **15 km north of the NSW/VIC border**, measured perpendicular to the border | **17,545 km²** | 17,670 km² |
-| **Open Area 2** | Coastal strip from **Grafton north to the Queensland border**, held at Grafton's own distance from the coast (**35.0 km**), plus **Casino** behind a 5 km road-routed boundary; southern edge routed on roads east to the sea at Diggers Camp | **6,770 km²** | 6,713 km² |
-| **Active PMA** | The balance of NSW + ACT, held 100 m clear of the QLD border | **763,248 km²** | 763,180 km² |
+| **Open Area 2** | Coastal strip from **Grafton north to the Queensland border**, held at Grafton's own distance from the coast (**35.0 km**), plus **Casino** behind a 5 km road-routed boundary; southern edge routed on roads east to the sea at Diggers Camp | **6,754 km²** | 6,696 km² |
+| **Active PMA** | The balance of NSW + ACT, held 500 m clear of the QLD border | **763,006 km²** | 762,937 km² |
 
 The NSW/VIC border itself measures **1,753 km** — the River Murray from the South
-Australian corner to its source, then the straight survey line to Cape Howe.
+Australian corner to its source, then the straight survey line to Cape Howe. The
+NSW/QLD border measures **1,681 km** over 4,845 vertices, from OpenStreetMap's
+administrative boundary; the two borders are at different resolutions, because
+only Queensland was in scope for the setback work.
 
 Two boundary versions exist for each open area. The **road-routed** version is the
 operative one and is shown by default. The **geometric** version is the pure
@@ -47,9 +50,11 @@ distance line, kept for comparison and as the definition of record.
 5. **Casino was folded in** (this revision) behind a 5 km road-routed boundary,
    as one continuous area rather than a detached ring. That closes open question
    1 below for Casino; Kyogle is untouched and still outside.
-6. **Every polygon is now held 100 m south of the NSW/QLD border** (this
-   revision). Before it, Open Area 2 spilled 0.42 km² into Queensland through
-   topology noise in the source state outlines.
+6. **Every polygon is now held 500 m south of the NSW/QLD border**, measured
+   against the **OpenStreetMap administrative boundary** rather than the 1:250k
+   state outline the rest of the build uses. The old line ran a median 109 m and
+   up to 6 km from the real border, so a setback measured against it did not mean
+   what it said. Before this, Open Area 2 spilled 0.42 km² into Queensland.
 
 ## 3. Where the boundaries actually run
 
@@ -105,8 +110,8 @@ only.
 
 4,118 localities are classified in `data/towns.json`. On the operative
 **road-routed** boundaries: 107 in Open Area 1, 336 in Open Area 2, 1,437 Active
-PMA, 2,238 Victorian (context only). On the geometric boundaries: 110 / 328 /
-1,442. Each locality carries both — `zr` is routed, `z` is geometric.
+PMA, 2,238 Victorian (context only). On the geometric boundaries: 110 / 334 /
+1,436. Each locality carries both — `zr` is routed, `z` is geometric.
 
 ## 4. Open questions for the business
 

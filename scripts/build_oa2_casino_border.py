@@ -1,14 +1,20 @@
 """Open Area 2: fold Casino in behind a 5 km road-routed boundary, and hold
-every PMA polygon 100 m clear of the NSW/Queensland border.
+every PMA polygon 500 m south of the real NSW/Queensland border.
 
 Casino sits 43.6 km from the coast — 8 km outside the 35 km strip. Rather than a
 detached ring, the western boundary of Open Area 2 detours around the town and
 rejoins the Summerland Way corridor north and south, so Open Area 2 stays a
-single continuous area.
+single continuous area. The detour is routed the same way as every other
+boundary here, with one addition: road nodes within 4.2 km of the centre of
+Casino are removed from the graph before routing, so shortest paths cannot cut
+back through the town.
 
-The detour is routed the same way as every other boundary in the project, with
-one addition: road nodes within 4.2 km of the centre of Casino are removed from
-the graph before routing, so shortest paths cannot cut back through the town.
+The Queensland border used for the setback is no longer the ~1:250k state
+outline the rest of the build is drawn from. It is the administrative boundary
+as published in OpenStreetMap — the ways shared by the NSW and QLD
+admin_level=4 relations, the same line consumer maps render. The 1:250k outline
+runs a median 109 m and up to 6 km away from it, so a setback measured against
+the old line would not have meant what it says.
 """
 import json, pathlib
 from shapely.geometry import LineString, Point, box, shape, mapping
@@ -22,11 +28,12 @@ inv = pyproj.Transformer.from_crs("EPSG:3112", "EPSG:4326", always_xy=True).tran
 P = lambda g: transform(fwd, g)
 W = lambda g: transform(inv, g)
 
-CASINO   = Point(153.048, -28.861)     # town centre used throughout the project
-CAS_RAD  = 5000                         # the 5 km rule
-SETBACK  = 100                          # metres clear of the QLD border
+CASINO    = Point(153.048, -28.861)     # town centre used throughout the project
+CAS_RAD   = 5000                         # the 5 km rule
+NECK_WIN  = 8000                         # window used to build the geometric neck
+SETBACK   = 500                          # metres clear of the Queensland border
+MIN_PART  = 50_000                       # drop fragments below 5 ha
 SOUTH_LAT = -29.8073
-NECK_WIN  = 8000                        # window used to build the geometric neck
 
 def rd(p):
     pts = [tuple(map(float, s.split())) for s in p.read_text().strip().split(';')]
@@ -51,28 +58,34 @@ print(f"western boundary {P(inland).length/1000:.0f} km -> {P(inland2).length/10
 S = json.load(open(ROOT / 'work/states.geojson'))
 G = {f['properties']['STATE_NAME']: shape(f['geometry']).buffer(0) for f in S['features']}
 nsw, qld, act = G['New South Wales'], G['Queensland'], G['Australian Capital Territory']
-nswP, qldP = P(nsw), P(act) if False else P(qld)
-actP = P(act)
+nswP, qldP, actP = P(nsw), P(qld), P(act)
 
-# ---- the 100 m setback band along the NSW/QLD border ----------------------
-b = nsw.boundary.intersection(qld.buffer(0.0005))
-qld_line = linemerge(unary_union([g for g in getattr(b, 'geoms', [b]) if 'Line' in g.geom_type]))
-qld_lineP = P(qld_line)
-setback = qld_lineP.buffer(SETBACK)
-print(f"NSW/QLD border {qld_lineP.length/1000:,.0f} km; holding every polygon {SETBACK} m clear")
+# ---- the real Queensland border, from OpenStreetMap ------------------------
+qb = shape(json.load(open(ROOT / 'data/qld_border.geojson'))['geometry'])
+# trim the 5 km maritime tail east of Point Danger — the PMA ends at the coast
+land = unary_union([nsw, qld]).buffer(0.002)
+onland = qb.intersection(land)
+segs = [g for g in getattr(onland, 'geoms', [onland]) if 'Line' in g.geom_type]
+qb = max(segs, key=lambda g: g.length)
+qbP = P(qb)
+old = nsw.boundary.intersection(qld.buffer(0.0005))
+oldP = P(linemerge(unary_union([g for g in getattr(old, 'geoms', [old]) if 'Line' in g.geom_type])))
+print(f"NSW/QLD border: OSM {qbP.length/1000:,.0f} km / {len(qb.coords):,} vertices  "
+      f"vs 1:250k outline {oldP.length/1000:,.0f} km / 313 vertices")
 
-MIN_PART = 50_000                       # drop fragments below 5 ha
+# everything south of that line, so no polygon can survive north of it
+cut = LineString([(140.5, qb.coords[-1][1] + 0.02)] + list(qb.coords)[::-1] + [(154.6, qb.coords[0][1] - 0.02)])
+whole = unary_union([nswP, actP])
+pieces = list(split(whole, P(cut)).geoms)
+southern = unary_union([g for g in pieces if g.difference(qldP).area > g.area * 0.5])
+print(f"split NSW+ACT on the border into {len(pieces)} "
+      f"({[round(g.area/1e6) for g in pieces]} km2); keeping {southern.area/1e6:,.0f} km2 south of it")
+setback = qbP.buffer(SETBACK)
+print(f"holding every polygon {SETBACK} m clear of it")
 
 def clip(g):
-    """Keep inside NSW/ACT, out of Queensland, and SETBACK clear of the border.
-
-    The setback band shaves a handful of specks off the coastal end of the
-    border; anything under MIN_PART is dropped rather than left as detached
-    confetti on the map.
-    """
-    g = (g.intersection(nswP.union(actP))
-          .difference(qldP)
-          .difference(setback))
+    """Inside NSW/ACT, south of the real border, and SETBACK clear of it."""
+    g = g.intersection(southern).difference(qldP).difference(setback)
     g = make_valid(g.buffer(0))
     parts = [p for p in getattr(g, 'geoms', [g])
              if p.geom_type == 'Polygon' and p.area >= MIN_PART]
@@ -83,12 +96,12 @@ def clip(g):
 # ---- Open Area 2, road-routed --------------------------------------------
 region = nswP.intersection(P(box(151.0, -30.10, 154.3, -27.5)))
 region = max(getattr(region, 'geoms', [region]), key=lambda g: g.area)
-cut = LineString(
+cut2 = LineString(
     [(153.46, south.coords[-1][1])] +
     list(south.coords)[::-1] +
     list(inland2.coords)[1:] +
     [(inland2.coords[-1][0] - 0.05, -27.60)])
-parts = list(split(region, P(cut)).geoms)
+parts = list(split(region, P(cut2)).geoms)
 yamba = P(Point(153.34, -29.44))
 oa2_road = clip(unary_union([g for g in parts if g.contains(yamba)]))
 print(f"Open Area 2 (road, Casino in) {oa2_road.area/1e6:,.0f} km2")
@@ -98,31 +111,24 @@ fc = json.load(open(ROOT / 'data/pma.geojson'))
 by = {f['properties']['id']: shape(f['geometry']) for f in fc['features']}
 band = P(by['open2_exact'])
 disc = P(CASINO).buffer(CAS_RAD, resolution=64)
-local = band.intersection(disc.buffer(NECK_WIN))
-neck = unary_union([disc, local]).convex_hull
+neck = unary_union([disc, band.intersection(disc.buffer(NECK_WIN))]).convex_hull
 oa2_exact = clip(unary_union([band, disc, neck]))
-print(f"Open Area 2 (geometric, Casino in) {oa2_exact.area/1e6:,.0f} km2 "
-      f"(was {band.area/1e6:,.0f})")
+print(f"Open Area 2 (geometric, Casino in) {oa2_exact.area/1e6:,.0f} km2 (band was {band.area/1e6:,.0f})")
 
 # ---- Active PMA -----------------------------------------------------------
 o1e, o1r = P(by['open_exact']), P(by['open_road'])
-whole = unary_union([nswP, actP])
 act_exact = clip(whole.difference(o1e).difference(oa2_exact))
 act_road  = clip(whole.difference(o1r).difference(oa2_road))
 print(f"Active PMA road {act_road.area/1e6:,.0f} km2   exact {act_exact.area/1e6:,.0f} km2")
-
 for nm, g in (("Open Area 2 road", oa2_road), ("Open Area 2 exact", oa2_exact),
               ("Active road", act_road), ("Active exact", act_exact)):
-    print(f"   {nm:<18} into QLD {g.intersection(qldP).area:>10,.0f} m2   "
-          f"clearance from border {g.boundary.distance(qld_lineP):.1f} m")
+    print(f"   {nm:<18} into QLD {g.intersection(qldP).area:>8,.0f} m2   "
+          f"clearance from the border {g.boundary.distance(qbP):,.1f} m")
 
 def F(g, p):
-    """Project back to WGS84 and re-validate — a polygon that is valid in
-    EPSG:3112 can pinch into a self-intersection once reprojected."""
     w = W(g)
     if w.geom_type in ('Polygon', 'MultiPolygon') and not w.is_valid:
         w = make_valid(w)
-        # make_valid can hand back a GeometryCollection; keep only the areas
         if w.geom_type == 'GeometryCollection':
             w = unary_union([q for q in w.geoms
                              if q.geom_type in ('Polygon', 'MultiPolygon')])
@@ -130,6 +136,7 @@ def F(g, p):
                            'MultiLineString'), w.geom_type
     return {"type": "Feature", "properties": p,
             "geometry": json.loads(json.dumps(mapping(w)))}
+
 drop = {'open2_road', 'open2_exact', 'open2_line_snap', 'active_exact', 'active_road',
         'qld_border', 'open2_line_casino'}
 feats = [f for f in fc['features'] if f['properties']['id'] not in drop]
@@ -138,7 +145,8 @@ feats += [
   F(oa2_road,   {"id": "open2_road",  "area_km2": round(oa2_road.area/1e6)}),
   F(P(inland2), {"id": "open2_line_snap"}),
   F(P(casino),  {"id": "open2_line_casino"}),
-  F(qld_lineP,  {"id": "qld_border"}),
+  F(qbP,        {"id": "qld_border", "source": "OpenStreetMap admin_level=4",
+                 "length_km": round(qbP.length/1000), "setback_m": SETBACK}),
   F(act_exact,  {"id": "active_exact", "area_km2": round(act_exact.area/1e6)}),
   F(act_road,   {"id": "active_road",  "area_km2": round(act_road.area/1e6)}),
 ]
@@ -159,15 +167,3 @@ for t in towns:
 json.dump(towns, open(ROOT / 'data/towns.json', 'w'))
 print(f"\n{len(moved)} localities changed zone (geometric/routed):")
 for n, a, b_ in sorted(moved): print(f"   {n:<24} {a} -> {b_}")
-
-print("\nspot checks (routed / geometric):")
-for nm, lo, la in [("Casino",153.048,-28.861),("North Casino",153.0405,-28.8189),
-  ("West Casino",153.0245,-28.8657),("Casino Airport",153.0619,-28.8828),
-  ("Kyogle",152.985,-28.618),("Lismore",153.276,-28.813),("Coraki",153.291,-29.001),
-  ("Ellangowan",153.0554,-28.9686),("Naughtons Gap",153.1122,-28.7885),
-  ("Grafton",152.9336,-29.6876),("Tweed Heads",153.5450,-28.1830),
-  ("Murwillumbah",153.3925,-28.3277)]:
-    p = P(Point(lo, la))
-    print(f"   {nm:<18} road={'IN ' if oa2_road.contains(p) else 'out'}  "
-          f"exact={'IN ' if oa2_exact.contains(p) else 'out'}  "
-          f"{P(CASINO).distance(p)/1000:.1f} km from Casino")
