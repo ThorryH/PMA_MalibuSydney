@@ -636,3 +636,76 @@ it into the routed Open Area 1 boundary to produce
 rewrites `open_road`, `open_exact` and `line_snap`. It runs **before**
 `build_oa2_casino_border.py`, which recomputes the Active PMA and every
 locality's zone from whatever the two open areas have become.
+
+---
+
+# Revision — Open Area 2 meets the Queensland border
+
+The 500 m setback was applied to every polygon. That was more than was asked for
+— the request named the Active PMA — and it left Open Area 2, which is the
+carve-out, stopping short of the state line it is defined against.
+
+Open Area 2 now **runs to the border**. The Active PMA still **holds 500 m south**
+of it. Neither crosses.
+
+## Reaching the border is not the same as reaching the state outline
+
+Clipping Open Area 2 to the NSW polygon does not get it to the border, because
+the ~1:250k outline does not itself reach the border — it runs a median 109 m and
+up to about 300 m short of it. Open Area 2 would have stopped where the coarse
+outline stops, which is nowhere in particular.
+
+So the build now constructs the strip of land lying between the two state
+outlines and the real border (**1,088 km²** across the whole length), and lets
+Open Area 2 take the part of it adjacent to its own stretch. The northern limit
+of Open Area 2 is the OpenStreetMap administrative line itself, not any polygon
+derived from it.
+
+## A guard that was not working
+
+While making this change, the test that kept polygons on the southern side of the
+border turned out to be vacuous. It selected split pieces by "mostly not in
+Queensland", and the *northern* piece also satisfies that — it contains ocean, and
+South Australian land west of 141 E — so both halves were kept and the constraint
+did nothing. A second one had the same shape.
+
+Both now identify the southern side by asking which piece contains Sydney. A
+related bug: the cut line has to run clear out of the box being split or
+`split()` returns it whole, which it was doing.
+
+The delivered result was not wrong before — the setback subtraction and the
+Queensland difference were doing the real work, and the independent checks
+(area inside the Queensland polygon, and 1,681 sampled points along the border)
+were valid and passed. But the guard was not adding anything, and with it working
+the Active PMA loses **22 km²** that sat north of the true border inside the
+coarse NSW outline.
+
+## Verification
+
+| | |
+|---|---|
+| Open Area 2 north of the border | **0 m²** |
+| Open Area 2 gap to the border | **0.0 m** — it meets it |
+| Open Area 2 present 30 m south of the border | ~42 km of border, its whole stretch |
+| Active PMA north of the border | **0 m²** |
+| Active PMA gap to the border | **498.8 m** |
+| Active PMA within 450 m of the border | **0 of 3,362** sampled points |
+
+## Effect
+
+| | Before | After |
+|---|---|---|
+| Open Area 2 — road-routed | 6,754 km² | **6,776 km²** |
+| Open Area 2 — geometric | 6,706 km² | **6,729 km²** |
+| Active PMA — road-routed | 762,558 km² | **762,536 km²** |
+| Active PMA — geometric | 762,539 km² | **762,517 km²** |
+| Open Area 1 | 17,993 / 18,060 km² | unchanged |
+
+No locality changes zone.
+
+> **The margin is still a gap in coverage.** About 410 km² of New South Wales sits
+> in no zone, all of it the 500 m ribbon along the Active PMA's stretch of the
+> border. That is the accepted consequence of the asymmetry: the open area meets
+> the line, the dealer's area keeps a margin. If the Active PMA should meet the
+> border too, removing `clip_setback` in favour of `clip_touch` is a one-line
+> change and the ribbon disappears.

@@ -9,6 +9,12 @@ boundary here, with one addition: road nodes within 4.2 km of the centre of
 Casino are removed from the graph before routing, so shortest paths cannot cut
 back through the town.
 
+Open Area 2 runs **to** the Queensland border. The Active PMA is held **500 m
+south** of it. That asymmetry is deliberate: the open area is the carve-out and
+should meet the state line, while the dealer's area keeps a margin. It leaves a
+~400 km² ribbon of NSW in no zone along the Active PMA's stretch of the border,
+which is a known and accepted consequence.
+
 The Queensland border used for the setback is no longer the ~1:250k state
 outline the rest of the build is drawn from. It is the administrative boundary
 as published in OpenStreetMap — the ways shared by the NSW and QLD
@@ -77,21 +83,57 @@ print(f"NSW/QLD border: OSM {qbP.length/1000:,.0f} km / {len(qb.coords):,} verti
 cut = LineString([(140.5, qb.coords[-1][1] + 0.02)] + list(qb.coords)[::-1] + [(154.6, qb.coords[0][1] - 0.02)])
 whole = unary_union([nswP, actP])
 pieces = list(split(whole, P(cut)).geoms)
-southern = unary_union([g for g in pieces if g.difference(qldP).area > g.area * 0.5])
-print(f"split NSW+ACT on the border into {len(pieces)} "
-      f"({[round(g.area/1e6) for g in pieces]} km2); keeping {southern.area/1e6:,.0f} km2 south of it")
-setback = qbP.buffer(SETBACK)
-print(f"holding every polygon {SETBACK} m clear of it")
+SYD = P(Point(151.2093, -33.8688))          # unambiguously the southern side
+southern = unary_union([g for g in pieces if g.contains(SYD) or g.distance(SYD) < 1])
+if not any(g.contains(SYD) for g in pieces):
+    raise SystemExit("could not identify the southern side of the border")
 
-def clip(g):
-    """Inside NSW/ACT, south of the real border, and SETBACK clear of it."""
-    g = g.intersection(southern).difference(qldP).difference(setback)
+# The ~1:250k NSW outline does not itself reach the real border — it falls up to
+# 300 m short in places. Clipping to it would leave Open Area 2 stopping short of
+# the line it is supposed to meet. So build the strip of land between the two
+# outlines and the true border, and let Open Area 2 take it.
+# the cut has to run clear out of the box or split() returns it whole
+BOX = box(140.0, -38.0, 155.0, -27.0)
+wide_cut = LineString([(138.0, qb.coords[-1][1] + 0.02)] + list(qb.coords)[::-1]
+                      + [(157.0, qb.coords[0][1] - 0.02)])
+big = P(BOX)
+bpieces = list(split(big, P(wide_cut)).geoms)
+south_of_border = unary_union([g for g in bpieces if g.contains(SYD)])
+if south_of_border.is_empty:
+    raise SystemExit("could not identify the region south of the border")
+print(f"box split into {len(bpieces)}; southern side {south_of_border.area/1e6:,.0f} km2 "
+      f"of {big.area/1e6:,.0f} km2")
+fill = unary_union([nswP, qldP]).intersection(south_of_border).intersection(qbP.buffer(700))
+print(f"strip between the state outlines and the real border: {fill.area/1e6:,.1f} km2")
+print(f"split NSW+ACT on the border into {len(pieces)}; "
+      f"keeping {southern.area/1e6:,.0f} km2 on the southern side")
+setback = qbP.buffer(SETBACK)
+print(f"Open Area 2 runs to the border; the Active PMA is held {SETBACK} m clear of it")
+
+def _tidy(g):
     g = make_valid(g.buffer(0))
     parts = [p for p in getattr(g, 'geoms', [g])
              if p.geom_type == 'Polygon' and p.area >= MIN_PART]
     g = make_valid(unary_union(parts))
     assert g.is_valid, explain_validity(g)
     return g
+
+def clip_touch(g):
+    """South of the real border and meeting it, not crossing.
+
+    Used for Open Area 2, which runs right up to the state line. The northern
+    limit is the OpenStreetMap border itself, not the coarse state outline.
+    """
+    g = g.intersection(southern).difference(qldP)
+    g = unary_union([g, fill.intersection(g.buffer(900))])
+    return _tidy(g.intersection(south_of_border))
+
+def clip_setback(g):
+    """As clip_touch, then held SETBACK metres clear of the border.
+
+    Used for the Active PMA.
+    """
+    return _tidy(g.intersection(southern).difference(qldP).difference(setback))
 
 # ---- Open Area 2, road-routed --------------------------------------------
 region = nswP.intersection(P(box(151.0, -30.10, 154.3, -27.5)))
@@ -103,7 +145,7 @@ cut2 = LineString(
     [(inland2.coords[-1][0] - 0.05, -27.60)])
 parts = list(split(region, P(cut2)).geoms)
 yamba = P(Point(153.34, -29.44))
-oa2_road = clip(unary_union([g for g in parts if g.contains(yamba)]))
+oa2_road = clip_touch(unary_union([g for g in parts if g.contains(yamba)]))
 print(f"Open Area 2 (road, Casino in) {oa2_road.area/1e6:,.0f} km2")
 
 # ---- Open Area 2, geometric: 35 km band + a 5 km disc round Casino + neck --
@@ -113,19 +155,23 @@ band = P(by['open2_exact'])
 disc = P(CASINO).buffer(CAS_RAD, resolution=64)
 win  = band.distance(disc) + NECK_PAD      # same neck rule as Deniliquin
 neck = unary_union([disc, band.intersection(disc.buffer(win))]).convex_hull
-oa2_exact = clip(unary_union([band, disc, neck]))
+oa2_exact = clip_touch(unary_union([band, disc, neck]))
 print(f"Open Area 2 (geometric, Casino in) {oa2_exact.area/1e6:,.0f} km2 "
       f"(band was {band.area/1e6:,.0f}; neck window {win/1000:.1f} km)")
 
 # ---- Active PMA -----------------------------------------------------------
 o1e, o1r = P(by['open_exact']), P(by['open_road'])
-act_exact = clip(whole.difference(o1e).difference(oa2_exact))
-act_road  = clip(whole.difference(o1r).difference(oa2_road))
+act_exact = clip_setback(whole.difference(o1e).difference(oa2_exact))
+act_road  = clip_setback(whole.difference(o1r).difference(oa2_road))
 print(f"Active PMA road {act_road.area/1e6:,.0f} km2   exact {act_exact.area/1e6:,.0f} km2")
+# The authority for "in Queensland" is the OSM border line, not the coarse QLD
+# outline — the two disagree by up to 300 m and the whole point of this work was
+# to trust the line. north_of_border is the real test.
+north_of_border = P(box(140.0, -38.0, 155.0, -27.0)).difference(south_of_border)
 for nm, g in (("Open Area 2 road", oa2_road), ("Open Area 2 exact", oa2_exact),
               ("Active road", act_road), ("Active exact", act_exact)):
-    print(f"   {nm:<18} into QLD {g.intersection(qldP).area:>8,.0f} m2   "
-          f"clearance from the border {g.boundary.distance(qbP):,.1f} m")
+    print(f"   {nm:<18} north of the border {g.intersection(north_of_border).area:>7,.0f} m2   "
+          f"gap to it {g.boundary.distance(qbP):>6,.1f} m")
 
 def F(g, p):
     w = W(g)

@@ -14,8 +14,8 @@ dealership in Sydney.
 | Zone | Definition | Area |
 |---|---|---|
 | **Open Area 1** | Everything within **15 km north of the NSW/VIC border**, measured perpendicular to the border, **plus Deniliquin** behind a 5 km road-routed boundary | 17,993 km² road-routed (18,060 km² geometric) |
-| **Active PMA** | The balance of New South Wales + the ACT — the NSW dealer's area, held 500 m clear of the Queensland border | 762,558 km² road-routed (762,539 km² geometric) |
-| **Open Area 2** | The coastal strip from **Grafton north to the Queensland border**, held at Grafton's distance from the coast — **35.0 km** — **plus Casino**, enclosed behind a 5 km road-routed boundary. The routed line runs west of Grafton so the whole city is inside, and its southern edge follows roads east to the sea at Diggers Camp | 6,754 km² road-routed (6,706 km² geometric) |
+| **Active PMA** | The balance of New South Wales + the ACT — the NSW dealer's area, held 500 m clear of the Queensland border | 762,536 km² road-routed (762,517 km² geometric) |
+| **Open Area 2** | The coastal strip from **Grafton north to the Queensland border**, held at Grafton's distance from the coast — **35.0 km** — **plus Casino**, enclosed behind a 5 km road-routed boundary. The routed line runs west of Grafton so the whole city is inside, and its southern edge follows roads east to the sea at Diggers Camp | 6,776 km² road-routed (6,729 km² geometric) |
 
 The Victorian border runs 1,753 km: the River Murray from the South Australian
 corner up to its source, then the straight survey line south-east to Cape Howe.
@@ -41,13 +41,14 @@ Road, the Summerland Way, Llewellyns Road, the Bruxner Highway, Sextonville Road
 Naughtons Gap Road — and rejoins the corridor north and south. Open Area 2 stays one
 continuous area; there is no separate ring. Kyogle remains outside.
 
-**Nothing touches Queensland.** Every polygon is held 500 m south of the NSW/QLD
-border — and the border itself was replaced. It is now the administrative boundary
+**Open Area 2 meets the Queensland border; the Active PMA holds 500 m south of it.**
+Neither crosses. The border itself was replaced. It is now the administrative boundary
 published in OpenStreetMap (the shared ways of the NSW and QLD `admin_level=4`
 relations, the line consumer maps draw): **4,845 vertices over 1,681 km**, against
 the 313-vertex, 1,501 km state outline the rest of the build uses, which runs a
-median 109 m and up to 6 km away from the real border. Verified at 1 km intervals
-along the whole length.
+median 109 m and up to 6 km away from the real border. Verified at 500 m intervals
+along the whole length. The 500 m margin leaves about 410 km² of NSW in no zone
+along the Active PMA's stretch of the border — deliberate, not an error.
 
 > **Grafton and Casino are both inside Open Area 2.** The routed boundary runs west
 > of Grafton — so Grafton, South Grafton, Junction Hill, Clarenza, Waterview Heights

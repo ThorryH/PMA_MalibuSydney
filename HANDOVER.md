@@ -22,8 +22,8 @@ planning artefact, not a legal instrument.
 | Area | Rule | Road-routed | Geometric |
 |---|---|---|---|
 | **Open Area 1** | Within **15 km north of the NSW/VIC border**, measured perpendicular to the border, plus **Deniliquin** behind a 5 km road-routed boundary | **17,993 km²** | 18,060 km² |
-| **Open Area 2** | Coastal strip from **Grafton north to the Queensland border**, held at Grafton's own distance from the coast (**35.0 km**), plus **Casino** behind a 5 km road-routed boundary; southern edge routed on roads east to the sea at Diggers Camp | **6,754 km²** | 6,706 km² |
-| **Active PMA** | The balance of NSW + ACT, held 500 m clear of the QLD border | **762,558 km²** | 762,539 km² |
+| **Open Area 2** | Coastal strip from **Grafton north to the Queensland border**, held at Grafton's own distance from the coast (**35.0 km**), plus **Casino** behind a 5 km road-routed boundary; southern edge routed on roads east to the sea at Diggers Camp | **6,776 km²** | 6,729 km² |
+| **Active PMA** | The balance of NSW + ACT, held 500 m clear of the QLD border | **762,536 km²** | 762,517 km² |
 
 The NSW/VIC border itself measures **1,753 km** — the River Murray from the South
 Australian corner to its source, then the straight survey line to Cape Howe. The
@@ -51,7 +51,11 @@ distance line, kept for comparison and as the definition of record.
 5. **Casino was folded in** (this revision) behind a 5 km road-routed boundary,
    as one continuous area rather than a detached ring. That closes open question
    1 below for Casino; Kyogle is untouched and still outside.
-6. **Every polygon is now held 500 m south of the NSW/QLD border**, measured
+6. **Open Area 2 meets the NSW/QLD border; the Active PMA is held 500 m south**
+   of it. Neither crosses. Open Area 2's northern limit is the OSM line itself,
+   not the coarse state outline, which falls up to 300 m short of it. The margin
+   leaves ~410 km² of NSW in no zone along the Active PMA's stretch — accepted,
+   not an error. The setback is measured
    against the **OpenStreetMap administrative boundary** rather than the 1:250k
    state outline the rest of the build uses. The old line ran a median 109 m and
    up to 6 km from the real border, so a setback measured against it did not mean
@@ -179,7 +183,7 @@ make lock PW=malsyd
 | `build_open_area_2.py` | Open Area 2 routed western boundary and area arithmetic |
 | `build_oa2_south_route.py` | Open Area 2 routed **southern** edge; rewrites `open2_road`, `active_road` and every locality's `zr` |
 | `build_oa1_deniliquin.py` | Splices the **Deniliquin** detour into Open Area 1's routed boundary; rewrites `open_road`, `open_exact`, `line_snap`. Runs **before** the Casino script |
-| `build_oa2_casino_border.py` | Splices the **Casino** detour into Open Area 2's western boundary, applies the **500 m QLD border setback** to all four polygons, recomputes the Active PMA and rewrites `z` and `zr` |
+| `build_oa2_casino_border.py` | Splices the **Casino** detour into Open Area 2's western boundary; runs Open Area 2 **to** the QLD border and holds the Active PMA **500 m south** of it; recomputes the Active PMA and rewrites `z` and `zr` |
 | `build_towns.py` | Classifies 4,118 localities by zone and distance |
 | `build_overview.py` | The state overview PNG |
 | `build_map.py` | Inlines everything into the single-file map |
